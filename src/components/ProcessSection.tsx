@@ -57,13 +57,13 @@ export function ProcessSection() {
       <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-16 md:gap-0">
         
         {/* Left Column: Heading & CTA */}
-        <div className="w-full md:w-[45%] flex flex-col items-center md:items-end text-center md:text-right md:pr-16 lg:pr-24 pt-10 md:pt-32">
+        <div className="w-full md:w-[45%] flex flex-col items-start md:items-end text-left md:text-right md:pr-16 lg:pr-24 pt-10 md:pt-32">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.5 }}
             transition={{ duration: 0.7 }}
-            className="font-italiana text-white text-[3.5rem] sm:text-[4rem] lg:text-[5rem] leading-[1.05]"
+            className="font-italiana text-white text-[3.2rem] sm:text-[4rem] lg:text-[5rem] leading-[1.05]"
           >
             A process built around clarity and craft.
           </motion.h2>
@@ -72,7 +72,7 @@ export function ProcessSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.5 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="mt-8 text-white/70 text-[14px] sm:text-[15px] font-light max-w-[320px] leading-relaxed"
+            className="mt-6 md:mt-8 text-white/70 text-[14px] sm:text-[15px] font-light max-w-[320px] leading-relaxed"
           >
             No surprises, no handoff chaos. Just a clear path from the first conversation to a product that works.
           </motion.p>
@@ -81,7 +81,7 @@ export function ProcessSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.5 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-10"
+            className="mt-8 md:mt-10"
           >
             <a 
               href="#pricing"
@@ -92,7 +92,7 @@ export function ProcessSection() {
           </motion.div>
         </div>
 
-        {/* Central Divider & Star */}
+        {/* Central Divider & Star (Desktop Only) */}
         <div className="hidden md:flex relative w-[2px] bg-gradient-to-b from-transparent via-white/10 to-transparent flex-shrink-0">
           <motion.div 
             style={{ top: starY }}
@@ -105,7 +105,20 @@ export function ProcessSection() {
         </div>
 
         {/* Right Column: Steps */}
-        <div className="w-full md:w-[55%] flex flex-col gap-16 sm:gap-24 md:pl-16 lg:pl-24 pt-10 md:pt-32">
+        <div className="relative w-full md:w-[55%] flex flex-col gap-14 sm:gap-24 md:pl-16 lg:pl-24 pt-14 md:pt-32">
+          
+          {/* Mobile Vertical Line & Star */}
+          <div className="absolute left-[13px] top-16 bottom-0 w-[1.5px] bg-gradient-to-b from-transparent via-white/10 to-transparent md:hidden">
+            <motion.div 
+              style={{ top: starY }}
+              className="absolute left-1/2 -translate-x-1/2 w-8 h-8 -mt-4 flex items-center justify-center text-[#F26522] drop-shadow-[0_0_12px_rgba(242,101,34,0.8)]"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <path d="M12 0C12 6.627 17.373 12 24 12C17.373 12 12 17.373 12 24C12 17.373 6.627 12 0 12C6.627 12 12 6.627 12 0Z" />
+              </svg>
+            </motion.div>
+          </div>
+
           {PROCESS_STEPS.map((step, i) => (
             <motion.div 
               key={step.num}
@@ -113,20 +126,13 @@ export function ProcessSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: false, amount: 0.5, margin: "-100px" }}
               transition={{ duration: 0.7 }}
-              className="relative group"
+              className="relative group pl-12 md:pl-0"
             >
-              {/* Mobile Star Indicator (hidden on desktop since it has the center line) */}
-              <div className="absolute -left-8 top-1 md:hidden text-[#F26522] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 drop-shadow-[0_0_10px_rgba(242,101,34,0.8)]">
-                  <path d="M12 0C12 6.627 17.373 12 24 12C17.373 12 12 17.373 12 24C12 17.373 6.627 12 0 12C6.627 12 12 6.627 12 0Z" />
-                </svg>
-              </div>
-
-              <span className="text-white/30 text-[13px] font-mono tracking-widest">{step.num}</span>
-              <h3 className="mt-3 font-italiana text-white/90 text-[2.5rem] sm:text-[3rem] leading-none transition-colors duration-500 group-hover:text-white group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+              <span className="text-white/30 text-[12px] sm:text-[13px] font-mono tracking-widest block mb-2">{step.num}</span>
+              <h3 className="font-italiana text-white/90 text-[2.2rem] sm:text-[3rem] leading-none transition-colors duration-500 group-hover:text-white group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
                 {step.title}
               </h3>
-              <p className="mt-4 text-white/50 text-[14px] sm:text-[15px] font-light max-w-[340px] leading-relaxed transition-colors duration-500 group-hover:text-white/80">
+              <p className="mt-3 md:mt-4 text-white/50 text-[14px] sm:text-[15px] font-light max-w-[340px] leading-relaxed transition-colors duration-500 group-hover:text-white/80">
                 {step.desc}
               </p>
             </motion.div>

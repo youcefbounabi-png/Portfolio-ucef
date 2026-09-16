@@ -273,32 +273,6 @@ export function DaVinciSectionWatermark({
             <circle cx="0" cy="0" r="4" fill="white" filter="url(#dvGlowWork)" />
             
           </g>
-
-          {/* Lower left Leonardo caliper & coordinate frame with animated vernier slider */}
-          <g transform="translate(90, 740)" opacity="0.85">
-            <line x1="0" y1="0" x2="340" y2="0" stroke="white" strokeWidth="1.2" />
-            <line x1="0" y1="-12" x2="0" y2="12" stroke="white" strokeWidth="1.6" />
-            <line x1="340" y1="-12" x2="340" y2="12" stroke="white" strokeWidth="1.6" />
-
-            {/* Animated vernier indicator mark sliding back and forth */}
-            <motion.line
-              x1="60"
-              y1="-8"
-              x2="60"
-              y2="8"
-              stroke="#FFFFFF"
-              strokeWidth="2"
-              filter="url(#dvGlowWork)"
-              animate={{ x: [0, 220, 0] }}
-              transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-            />
-
-            {[0, 40, 80, 120, 160, 200, 240, 280, 320].map((x) => (
-              <line key={x} x1={x} y1="-5" x2={x} y2="5" stroke="rgba(255,255,255,0.7)" strokeWidth="0.9" />
-            ))}
-
-            
-          </g>
         </svg>
       </div>
     )

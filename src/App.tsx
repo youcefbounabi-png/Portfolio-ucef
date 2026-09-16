@@ -1570,10 +1570,10 @@ export default function App() {
             {/* Left: Youcef Portrait emerging directly from the orange surface */}
             <div className="lg:col-span-5 flex justify-center lg:justify-end">
               <motion.div
-                initial={{ opacity: 0, scale: 0.92, y: 28 }}
+                initial={{ opacity: 0, scale: 0.95, y: 50 }}
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
+                viewport={{ once: false, amount: 0.2 }}
+                transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
                 className="relative w-[280px] sm:w-[330px] md:w-[380px] lg:w-[410px] xl:w-[440px]"
               >
                 {/* Ambient warm radial glow blooming into #F26522 */}
