@@ -1185,9 +1185,6 @@ export default function App() {
   const leftStatueX = useTransform(stackScrollProgress, [0.10, 0.28, 0.88, 0.99], ['-70%', '0%', '0%', '-70%'])
   const leftStatueOpacity = useTransform(stackScrollProgress, [0.10, 0.24, 0.88, 0.99], [0, 1, 1, 0])
 
-  const rightStatueX = useTransform(stackScrollProgress, [0.10, 0.28, 0.88, 0.99], ['70%', '0%', '0%', '70%'])
-  const rightStatueOpacity = useTransform(stackScrollProgress, [0.10, 0.24, 0.88, 0.99], [0, 1, 1, 0])
-
   useMotionValueEvent(globalThemeBg, 'change', (latest) => {
     if (typeof document !== 'undefined') {
       document.body.style.backgroundColor = latest
@@ -1745,29 +1742,7 @@ export default function App() {
                 />
               </motion.div>
 
-              {/* Right Marble Heroes — Restored Flawless Neoclassical Sculpture Pushed Down to AI & Voice Automations level */}
-              <motion.div
-                aria-hidden
-                style={{
-                  x: rightStatueX,
-                  opacity: rightStatueOpacity,
-                }}
-                className="absolute right-0 top-0 bottom-0 pointer-events-none select-none will-change-transform z-0 h-full w-[65vw] sm:w-[50vw] md:w-[48vw] max-w-[340px] sm:max-w-[480px] md:max-w-[660px] opacity-45 sm:opacity-85 md:opacity-100 flex items-end justify-end pb-6 sm:pb-10 md:pb-14"
-              >
-                <motion.img
-                  src="/statue-right.webp"
-                  alt=""
-                  loading="eager"
-                  decoding="async"
-                  animate={{ y: [0, 8, 0] }}
-                  transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-full max-h-[82vh] sm:max-h-[86vh] md:max-h-[90vh] object-contain object-right-bottom select-none filter brightness-[0.98] contrast-[1.03] drop-shadow-[0_24px_50px_rgba(0,0,0,0.85)]"
-                  style={{
-                    maskImage: 'linear-gradient(to bottom, black 84%, transparent 99%)',
-                    WebkitMaskImage: 'linear-gradient(to bottom, black 84%, transparent 99%)',
-                  }}
-                />
-              </motion.div>
+              {/* Left Marble Warrior only in sticky top container — Right statue moved to baseline touching marquee ticker */}
 
               {/* Ambient gradients to softly transition top/bottom into adjacent sections */}
               <div className="absolute inset-0 bg-gradient-to-b from-[#0B0604] via-transparent to-[#0B0604] opacity-35 md:opacity-60 pointer-events-none" />
@@ -1844,6 +1819,30 @@ export default function App() {
 
           {/* marquee band — exit transition trigger zone into Pricing */}
           <div ref={exitTriggerRef} className="relative z-10 select-none pointer-events-none">
+            {/* Classical Sculptural Battle Artwork — Right Classical Heroes Flanking AI, Voice & Automation down until Marquee Ticker */}
+            <motion.div
+              aria-hidden
+              initial={{ opacity: 0, x: 48 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.1 }}
+              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute right-0 bottom-full z-0 pointer-events-none select-none will-change-transform w-[75vw] sm:w-[55vw] md:w-[48vw] lg:w-[42vw] max-w-[340px] sm:max-w-[480px] md:max-w-[620px] lg:max-w-[680px] flex items-end justify-end mb-[-1px]"
+            >
+              <motion.img
+                src="/statue-right.webp"
+                alt=""
+                loading="eager"
+                decoding="async"
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-full h-auto max-h-[580px] sm:max-h-[700px] md:max-h-[820px] lg:max-h-[900px] object-contain object-right-bottom select-none filter brightness-[0.98] contrast-[1.03] drop-shadow-[0_24px_50px_rgba(0,0,0,0.85)] opacity-65 sm:opacity-85 md:opacity-100"
+                style={{
+                  maskImage: 'linear-gradient(to left, black 75%, transparent 100%)',
+                  WebkitMaskImage: 'linear-gradient(to left, black 75%, transparent 100%)',
+                }}
+              />
+            </motion.div>
+
             <div className="border-y border-white/25 overflow-x-clip py-5 mb-4 select-none pointer-events-none">
               <motion.div
                 animate={{ x: ['0%', '-50%'] }}

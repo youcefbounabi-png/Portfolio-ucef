@@ -74,51 +74,7 @@ export function DaVinciPortraitHalo({ className = '' }: { className?: string }) 
             />
           ))}
 
-          {/* Technical degree labels */}
-          <text
-            x="300"
-            y="32"
-            textAnchor="middle"
-            fill="rgba(255, 255, 255, 0.45)"
-            fontSize="8"
-            fontFamily="monospace"
-            letterSpacing="0.1em"
-          >
-            000°
-          </text>
-          <text
-            x="568"
-            y="303"
-            textAnchor="start"
-            fill="rgba(255, 255, 255, 0.4)"
-            fontSize="8"
-            fontFamily="monospace"
-            letterSpacing="0.1em"
-          >
-            090°
-          </text>
-          <text
-            x="300"
-            y="576"
-            textAnchor="middle"
-            fill="rgba(255, 255, 255, 0.4)"
-            fontSize="8"
-            fontFamily="monospace"
-            letterSpacing="0.1em"
-          >
-            180°
-          </text>
-          <text
-            x="32"
-            y="303"
-            textAnchor="end"
-            fill="rgba(255, 255, 255, 0.4)"
-            fontSize="8"
-            fontFamily="monospace"
-            letterSpacing="0.1em"
-          >
-            270°
-          </text>
+          
         </motion.g>
 
         {/* 2. Counter-rotating Da Vinci Star Heptagram / Inscribed Polygons */}
@@ -187,29 +143,7 @@ export function DaVinciPortraitHalo({ className = '' }: { className?: string }) 
           strokeWidth="1.2"
         />
 
-        {/* Subtle technical annotation badges */}
-        <g transform="translate(340, 160)">
-          <text
-            x="0"
-            y="0"
-            fill="rgba(255, 255, 255, 0.75)"
-            fontSize="8.5"
-            fontFamily="monospace"
-            letterSpacing="0.15em"
-          >
-            φ = 1.61803
-          </text>
-          <text
-            x="0"
-            y="12"
-            fill="rgba(255, 255, 255, 0.45)"
-            fontSize="7"
-            fontFamily="monospace"
-            letterSpacing="0.12em"
-          >
-            SECTIO AUREA
-          </text>
-        </g>
+        
       </svg>
     </div>
   )
@@ -243,9 +177,7 @@ export function DaVinciSectionWatermark({
           <line x1="80" y1="120" x2="1360" y2="120" stroke="white" strokeWidth="0.8" strokeDasharray="4 8" />
           <line x1="80" y1="112" x2="80" y2="128" stroke="white" strokeWidth="1.2" />
           <line x1="1360" y1="112" x2="1360" y2="128" stroke="white" strokeWidth="1.2" />
-          <text x="96" y="112" fill="white" opacity="0.6" fontSize="8" fontFamily="monospace" letterSpacing="0.2em">
-            AXIS_01 // LAT 51.5074° N · LON 0.1278° W
-          </text>
+          
 
           {/* Right quadrant Golden Spiral Construction lines */}
           <g transform="translate(1080, 260)" opacity="0.45">
@@ -257,9 +189,7 @@ export function DaVinciSectionWatermark({
             {/* Corner Crosshairs */}
             <path d="M -10 0 L 10 0 M 0 -10 L 0 10" stroke="white" strokeWidth="1" transform="translate(0, 0)" />
             <path d="M -10 0 L 10 0 M 0 -10 L 0 10" stroke="white" strokeWidth="1" transform="translate(240, 240)" />
-            <text x="130" y="55" fill="white" opacity="0.8" fontSize="7.5" fontFamily="monospace" letterSpacing="0.15em">
-              CANON PROPORTIONIS
-            </text>
+            
           </g>
 
           {/* Left margin architectural caliper ticks */}
@@ -267,9 +197,7 @@ export function DaVinciSectionWatermark({
             {[0, 30, 60, 90, 120, 150, 180, 210].map((y) => (
               <line key={y} x1="0" y1={y} x2={y % 60 === 0 ? "16" : "8"} y2={y} stroke="white" strokeWidth={y % 60 === 0 ? "1.2" : "0.6"} />
             ))}
-            <text x="24" y="94" fill="white" opacity="0.7" fontSize="7" fontFamily="monospace" transform="rotate(90 24 94)">
-              SCALE: 1.618
-            </text>
+            
           </g>
         </svg>
       </div>
@@ -343,12 +271,7 @@ export function DaVinciSectionWatermark({
             <line x1="0" y1="0" x2="180" y2="0" stroke="white" strokeWidth="1" opacity="0.8" />
             <line x1="0" y1="0" x2="0" y2="180" stroke="white" strokeWidth="1" opacity="0.8" />
             <circle cx="0" cy="0" r="4" fill="white" filter="url(#dvGlowWork)" />
-            <text x="14" y="32" fill="white" opacity="0.9" fontSize="8" fontFamily="monospace" letterSpacing="0.2em">
-              FABRICA INTELLIGENTIAE · 1498
-            </text>
-            <text x="14" y="46" fill="white" opacity="0.6" fontSize="7" fontFamily="monospace" letterSpacing="0.14em">
-              DIVINA PROPORTIO
-            </text>
+            
           </g>
 
           {/* Lower left Leonardo caliper & coordinate frame with animated vernier slider */}
@@ -374,12 +297,7 @@ export function DaVinciSectionWatermark({
               <line key={x} x1={x} y1="-5" x2={x} y2="5" stroke="rgba(255,255,255,0.7)" strokeWidth="0.9" />
             ))}
 
-            <text x="170" y="-16" textAnchor="middle" fill="white" opacity="0.9" fontSize="8" fontFamily="monospace" letterSpacing="0.2em">
-              [WORKS // 01 — 07] · CANON ARCHITECTONICVS
-            </text>
-            <text x="170" y="24" textAnchor="middle" fill="white" opacity="0.6" fontSize="7" fontFamily="monospace" letterSpacing="0.16em">
-              SCALE RATIO 1:1.618 · SACRED GEOMETRY
-            </text>
+            
           </g>
         </svg>
       </div>
@@ -451,12 +369,7 @@ export function DaVinciSectionWatermark({
             />
             <circle cx="60" cy="70" r="3" fill="white" filter="url(#dvGlowCap)" />
 
-            <text x="60" y="156" textAnchor="middle" fill="white" opacity="0.9" fontSize="7.5" fontFamily="monospace" letterSpacing="0.18em">
-              POLYHEDRA · PACIOLI 1498
-            </text>
-            <text x="60" y="168" textAnchor="middle" fill="white" opacity="0.6" fontSize="6.5" fontFamily="monospace" letterSpacing="0.14em">
-              DE DIVINA PROPORTIONE
-            </text>
+            
           </g>
 
           {/* Right margin technical radar coordinate with animated rotating sweep */}
@@ -481,12 +394,7 @@ export function DaVinciSectionWatermark({
               style={{ transformOrigin: '70px 70px' }}
             />
 
-            <text x="70" y="160" textAnchor="middle" fill="white" opacity="0.9" fontSize="7.5" fontFamily="monospace" letterSpacing="0.16em">
-              AI TELEPHONY · &lt;600MS
-            </text>
-            <text x="70" y="172" textAnchor="middle" fill="white" opacity="0.6" fontSize="6.5" fontFamily="monospace" letterSpacing="0.12em">
-              HIGH-PRECISION LATENCY ORBIT
-            </text>
+            
           </g>
         </svg>
       </div>
@@ -510,9 +418,7 @@ export function DaVinciSectionWatermark({
             <path d="M 0 20 L 0 0 L 20 0" stroke="white" strokeWidth="1.5" fill="none" />
             <line x1="30" y1="0" x2="1050" y2="0" stroke="white" strokeWidth="1" strokeDasharray="4 8" />
             <path d="M 1060 0 L 1080 0 L 1080 20" stroke="white" strokeWidth="1.5" fill="none" />
-            <text x="540" y="-10" textAnchor="middle" fill="white" opacity="0.9" fontSize="8" fontFamily="monospace" letterSpacing="0.22em">
-              TARIFARIVM · PROPORTIO MODERATA · MMXXVI
-            </text>
+            
           </g>
         </svg>
       </div>
@@ -579,11 +485,7 @@ export function DaVinciNeverMissCallWatermark({
             />
           ))}
 
-          {/* Technical degree numbers */}
-          <text x="600" y="0" textAnchor="middle" fill="white" opacity="0.8" fontSize="8" fontFamily="monospace" letterSpacing="0.1em">000°</text>
-          <text x="844" y="243" textAnchor="start" fill="white" opacity="0.8" fontSize="8" fontFamily="monospace" letterSpacing="0.1em">090°</text>
-          <text x="600" y="484" textAnchor="middle" fill="white" opacity="0.8" fontSize="8" fontFamily="monospace" letterSpacing="0.1em">180°</text>
-          <text x="356" y="243" textAnchor="end" fill="white" opacity="0.8" fontSize="8" fontFamily="monospace" letterSpacing="0.1em">270°</text>
+          
         </motion.g>
 
         {/* 2. Counter-rotating Inscribed Sacred Polygon */}
@@ -624,20 +526,7 @@ export function DaVinciNeverMissCallWatermark({
           transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         />
 
-        {/* Technical drafting notations */}
-        <text x="100" y="228" fill="white" opacity="0.85" fontSize="8.5" fontFamily="monospace" letterSpacing="0.2em">
-          CANON VOCIS // ACOUSTICA AVTONOMA
-        </text>
-        <text x="100" y="260" fill="white" opacity="0.6" fontSize="7.5" fontFamily="monospace" letterSpacing="0.14em">
-          LATENCY &lt;600MS · DUPLEX TELEPHONY
-        </text>
-
-        <text x="1100" y="228" textAnchor="end" fill="white" opacity="0.85" fontSize="8.5" fontFamily="monospace" letterSpacing="0.2em">
-          SECTIO AUREA · φ = 1.61803
-        </text>
-        <text x="1100" y="260" textAnchor="end" fill="white" opacity="0.6" fontSize="7.5" fontFamily="monospace" letterSpacing="0.14em">
-          DA VINCI CODEX · FOLIO 84V
-        </text>
+        
       </svg>
     </div>
   )
