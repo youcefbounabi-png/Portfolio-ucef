@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production build
+dist/
+dist-ssr/
+*.local
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+vite-dev*.log
+vite-dev-err.log
+
+# Editor and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Scratch and CV test directories
+cv_test/
+scratch_vid/
+canvas_test_render/
+
+# Temporary and test image processing files
+ChatGPT Image *
+frames_*
+scratch_*
+clean_mask_*
+exact_video_*
+contact_sheet_*
+cutout_on_*
+cv_preview_*
+fizzle_steps*
+test_*
+inpaint_*
+grid_25_*
+white_substance_*
+video_frames_grid.jpg
+youcef_blended_preview.jpg
+mobile_crop_*.jpg
+*.orig.png
