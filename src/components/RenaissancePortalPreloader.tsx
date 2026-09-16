@@ -13,19 +13,15 @@ const TOTAL_BURN_FRAMES = 25
 const FRAME_W = 960
 const FRAME_H = 720
 const COLS = 5
-const ROWS = 5
 
 export function RenaissancePortalPreloader({ onBurnProgress, onComplete }: PortalPreloaderProps) {
-  // 0 = Initial black + DaVinci Geometric Lines + Youcef Monogram / Youcef.dev
-  // 1 = Spark ignition
-  // 2 = Burning paper tearing & expanding into hero
-  // 3 = Finished
+  // Phase machine: 0 = Logo presentation, 1 = Spark ignition, 2 = Burning paper tear, 3 = Finished
   const [phase, setPhase] = useState<number>(0)
+  const [burnFrame, setBurnFrame] = useState<number>(-1)
+  const [continuousProgress, setContinuousProgress] = useState(0)
   const [isAssetsLoaded, setIsAssetsLoaded] = useState(false)
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const svgRef = useRef<SVGSVGElement | null>(null)
-  const identityRef = useRef<HTMLDivElement | null>(null)
   const maskSheetRef = useRef<HTMLImageElement | null>(null)
   const emberSheetRef = useRef<HTMLImageElement | null>(null)
 
@@ -44,139 +40,76 @@ export function RenaissancePortalPreloader({ onBurnProgress, onComplete }: Porta
 
     const mImg = new Image()
     mImg.src = '/burn/mask_sheet.webp?v=7'
-    mImg.onload = checkDone
+    mImg.onload = () => {
+      mImg.decode?.().catch(() => {}).finally(checkDone)
+    }
     mImg.onerror = checkDone
     maskSheetRef.current = mImg
 
     const eImg = new Image()
     eImg.src = '/burn/ember_sheet.webp?v=7'
-    eImg.onload = checkDone
+    eImg.onload = () => {
+      eImg.decode?.().catch(() => {}).finally(checkDone)
+    }
     eImg.onerror = checkDone
     emberSheetRef.current = eImg
   }, [])
 
-  // Optimized Direct Canvas Render Function — capped DPR prevents mobile GPU fill-rate throttling
-  const drawCanvas = (frame: number, progress: number, isDone: boolean) => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d', { alpha: true })
-    if (!ctx) return
-
-    // Cap DPR at 1.75 on mobile (avoids rendering 4K buffers on 3x retina phones)
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.75)
-    const width = window.innerWidth
-    const height = window.innerHeight
-    const targetW = Math.round(width * dpr)
-    const targetH = Math.round(height * dpr)
-
-    if (canvas.width !== targetW || canvas.height !== targetH) {
-      canvas.width = targetW
-      canvas.height = targetH
-    }
-
-    ctx.save()
-    ctx.scale(dpr, dpr)
-    ctx.clearRect(0, 0, width, height)
-
-    if (isDone || frame >= TOTAL_BURN_FRAMES) {
-      ctx.restore()
-      return
-    }
-
-    // 1. Draw solid pitch black paper
-    const canvasAlpha = progress > 0.95 ? Math.max(0, (1 - progress) / 0.05) : 1
-    ctx.globalAlpha = canvasAlpha
-    ctx.globalCompositeOperation = 'source-over'
-    ctx.fillStyle = '#000000'
-    ctx.fillRect(0, 0, width, height)
-
-    // 2. Punch the ragged hole and draw sizzling incandescent white rim
-    if (frame >= 0 && frame < TOTAL_BURN_FRAMES) {
-      const maskImg = maskSheetRef.current
-      const emberImg = emberSheetRef.current
-
-      const scale = Math.max(width / FRAME_W, height / FRAME_H)
-      const drawW = FRAME_W * scale
-      const drawH = FRAME_H * scale
-      const drawX = (width - drawW) / 2
-      const drawY = (height - drawH) / 2
-
-      const c = frame % COLS
-      const r = Math.floor(frame / COLS)
-      const sx = c * FRAME_W
-      const sy = r * FRAME_H
-
-      if (maskImg && maskImg.complete && maskImg.naturalWidth > 0) {
-        ctx.globalCompositeOperation = 'destination-out'
-        ctx.globalAlpha = 1
-        ctx.drawImage(maskImg, sx, sy, FRAME_W, FRAME_H, drawX, drawY, drawW, drawH)
-      }
-
-      if (emberImg && emberImg.complete && emberImg.naturalWidth > 0) {
-        ctx.globalCompositeOperation = 'source-over'
-        ctx.globalAlpha = 1
-        ctx.drawImage(emberImg, sx, sy, FRAME_W, FRAME_H, drawX, drawY, drawW, drawH)
-
-        ctx.globalCompositeOperation = 'screen'
-        ctx.globalAlpha = 0.92
-        ctx.drawImage(emberImg, sx, sy, FRAME_W, FRAME_H, drawX, drawY, drawW, drawH)
-      }
-    }
-
-    ctx.restore()
-  }
-
-  // Initial draw and window resize handling
-  useEffect(() => {
-    drawCanvas(-1, 0, false)
-    const handleResize = () => drawCanvas(-1, 0, false)
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [isAssetsLoaded])
-
-  // Sequence progression — runs entirely in rAF with zero React re-renders during tear
+  // Sequence progression — entire sequence completes within ~2.0s
   useEffect(() => {
     if (!isAssetsLoaded) return
+
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+    const holdParam = searchParams ? searchParams.get('hold') : null
+
+    if (holdParam !== null) {
+      const targetFrame = Math.min(Math.max(0, parseInt(holdParam, 10)), TOTAL_BURN_FRAMES - 1)
+      const prog = targetFrame / (TOTAL_BURN_FRAMES - 1)
+      setPhase(2)
+      setBurnFrame(targetFrame)
+      setContinuousProgress(prog)
+      onBurnProgressRef.current?.(prog)
+      return
+    }
 
     onBurnProgressRef.current?.(0)
 
     // 1. Blueprint screen sits quietly, sparks ignite at 650ms
     const sparkTimer = setTimeout(() => {
       setPhase(1)
-      drawCanvas(0, 0, false)
+      setBurnFrame(0)
     }, 650)
 
-    // 2. Dynamic tearing runs for 1050ms
+    // 2. Dynamic tearing with white substance begins at 750ms and runs for 1050ms
     const burnTimer = setTimeout(() => {
       setPhase(2)
 
       const burnStart = performance.now()
-      const burnDuration = 1050
+      const burnDuration = 1050 // Dynamic ripping across ~1.05s, total time ~1.85s-1.95s
 
       let raf = 0
       const tick = (now: number) => {
         const elapsed = now - burnStart
         const rawProgress = Math.min(elapsed / burnDuration, 1)
+
+        // Smooth cubic-out easing for natural physical expansion
         const easedProgress = 1 - Math.pow(1 - rawProgress, 2.2)
 
+        setContinuousProgress(easedProgress)
         onBurnProgressRef.current?.(easedProgress)
 
-        // Dissolve blueprint lines and text smoothly
-        const contentOpacity = easedProgress > 0 ? Math.max(0, 1 - easedProgress * 3.5) : 1
-        if (svgRef.current) svgRef.current.style.opacity = String(contentOpacity)
-        if (identityRef.current) identityRef.current.style.opacity = String(contentOpacity)
-
+        // Frames 0 to 24
         const frameIdx = Math.min(
           Math.floor(rawProgress * TOTAL_BURN_FRAMES),
           TOTAL_BURN_FRAMES - 1
         )
-
-        drawCanvas(frameIdx, easedProgress, false)
+        setBurnFrame(frameIdx)
 
         if (rawProgress < 1) {
           raf = requestAnimationFrame(tick)
         } else {
-          drawCanvas(TOTAL_BURN_FRAMES, 1, true)
+          setBurnFrame(TOTAL_BURN_FRAMES)
+          setContinuousProgress(1)
           onBurnProgressRef.current?.(1)
           setTimeout(() => {
             setPhase(3)
@@ -195,25 +128,114 @@ export function RenaissancePortalPreloader({ onBurnProgress, onComplete }: Porta
     }
   }, [isAssetsLoaded])
 
+  // Canvas rendering of the burning paper hole and incandescent glowing white substance
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const render = () => {
+      // Mobile perf: cap DPR at 1 to avoid 4K buffer fills
+      const isMobile = window.innerWidth < 768
+      const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 1.5)
+      const width = window.innerWidth
+      const height = window.innerHeight
+
+      if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
+        canvas.width = width * dpr
+        canvas.height = height * dpr
+      }
+
+      ctx.save()
+      ctx.scale(dpr, dpr)
+      ctx.clearRect(0, 0, width, height)
+
+      // If burn is finished, clear completely
+      if (burnFrame >= TOTAL_BURN_FRAMES || phase === 3) {
+        ctx.restore()
+        return
+      }
+
+      // 1. Draw solid pitch black paper
+      const canvasAlpha = continuousProgress > 0.95 ? Math.max(0, (1 - continuousProgress) / 0.05) : 1
+      ctx.globalAlpha = canvasAlpha
+      ctx.globalCompositeOperation = 'source-over'
+      ctx.fillStyle = '#000000'
+      ctx.fillRect(0, 0, width, height)
+
+      // 2. If burn has started, punch the organic hole and overlay incandescent white substance
+      if (burnFrame >= 0 && burnFrame < TOTAL_BURN_FRAMES) {
+        const maskImg = maskSheetRef.current
+        const emberImg = emberSheetRef.current
+
+        // Aspect-ratio cover calculation for 960x720 source frames (4:3)
+        const imgW = FRAME_W
+        const imgH = FRAME_H
+        const scale = Math.max(width / imgW, height / imgH)
+        const drawW = imgW * scale
+        const drawH = imgH * scale
+        const drawX = (width - drawW) / 2
+        const drawY = (height - drawH) / 2
+
+        const c = burnFrame % COLS
+        const r = Math.floor(burnFrame / COLS)
+        const sx = c * FRAME_W
+        const sy = r * FRAME_H
+
+        if (maskImg && maskImg.complete && maskImg.naturalWidth > 0) {
+          // Punch the ragged burning hole through the black paper
+          ctx.globalCompositeOperation = 'destination-out'
+          ctx.globalAlpha = 1
+          ctx.drawImage(maskImg, sx, sy, FRAME_W, FRAME_H, drawX, drawY, drawW, drawH)
+        }
+
+        if (emberImg && emberImg.complete && emberImg.naturalWidth > 0) {
+          // 1. Paint the sizzling incandescent white substance along the burning rim
+          ctx.globalCompositeOperation = 'source-over'
+          ctx.globalAlpha = 1
+          ctx.drawImage(emberImg, sx, sy, FRAME_W, FRAME_H, drawX, drawY, drawW, drawH)
+
+          // 2. Additive glow bloom pass for blistering incandescent intensity
+          // Skip on mobile to save GPU compositing overhead
+          if (!isMobile) {
+            ctx.globalCompositeOperation = 'screen'
+            ctx.globalAlpha = 0.95
+            ctx.drawImage(emberImg, sx, sy, FRAME_W, FRAME_H, drawX, drawY, drawW, drawH)
+          }
+        }
+      }
+
+      ctx.restore()
+    }
+
+    render()
+    const handleResize = () => render()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [phase, burnFrame, continuousProgress, isAssetsLoaded])
+
   if (phase === 3) return null
 
+  // Dissolve geometric lines and center identity smoothly as the paper is consumed
+  const contentOpacity = continuousProgress > 0 ? Math.max(0, 1 - continuousProgress * 3.5) : 1
+
   return (
-    <div className="fixed inset-0 z-[999] overflow-hidden select-none pointer-events-none will-change-transform">
+    <div className="fixed inset-0 z-[999] overflow-hidden select-none pointer-events-none">
       {/* ================= CANVAS: BLACK PAPER + BURNING PAPER CUTOUT + EMBER RIM ================= */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full block pointer-events-none z-10 will-change-transform"
+        className="absolute inset-0 w-full h-full block pointer-events-none z-10"
       />
 
-      {/* ================= DAVINCI GEOMETRIC DRAFTING LINES (NO "X" RAYS, NO CENTRAL BOX) ================= */}
+      {/* ================= DAVINCI GEOMETRIC DRAFTING LINES ================= */}
       <svg
-        ref={svgRef}
-        className="absolute inset-0 w-full h-full pointer-events-none z-15 will-change-transform"
+        className="absolute inset-0 w-full h-full pointer-events-none z-15"
         viewBox="0 0 1600 1200"
         preserveAspectRatio="xMidYMid slice"
         style={{
-          opacity: 1,
-          transition: 'opacity 0.25s ease-out',
+          opacity: contentOpacity,
+          transition: 'opacity 0.3s ease-out',
         }}
       >
         <defs>
@@ -286,11 +308,10 @@ export function RenaissancePortalPreloader({ onBurnProgress, onComplete }: Porta
 
       {/* ================= PURE IDENTITY: YOUCEF LOGO + YOUCEF.DEV ================= */}
       <div
-        ref={identityRef}
-        className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none will-change-transform"
+        className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none"
         style={{
-          opacity: 1,
-          transition: 'opacity 0.25s ease-out',
+          opacity: contentOpacity,
+          transition: 'opacity 0.3s ease-out',
         }}
       >
         <motion.div

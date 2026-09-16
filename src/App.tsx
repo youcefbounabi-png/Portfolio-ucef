@@ -8,6 +8,7 @@ import CloudTransition from './CloudTransition'
 import { FaqAccordion } from './components/ui/faq-accordion'
 import { RenaissancePortalPreloader } from './components/RenaissancePortalPreloader'
 import { DaVinciPortraitHalo, DaVinciSectionWatermark, DaVinciNeverMissCallWatermark } from './components/DaVinciWatermarks'
+import { ProcessSection } from './components/ProcessSection'
 
 const LOGO_PATH =
   'M60 120C26.8629 120 0 93.1371 0 60V0C22.5654 0 42.2213 12.4569 52.4662 30.8691C38.4788 34.2089 28.0787 46.7902 28.0787 61.8006V63.1443C28.0787 79.9648 41.7146 93.6006 58.5353 93.6006H59.8789L59.8785 61.8006C59.8785 79.3633 74.1159 93.6006 91.6787 93.6006L91.6787 61.8006C91.6787 44.2783 77.5071 30.0661 60 30.0008L60 0H62.5352C94.2722 0 120 25.7279 120 57.4648V60C120 93.1371 93.1371 120 60 120Z'
@@ -561,8 +562,6 @@ function FillCta() {
   const clip = useMotionTemplate`inset(0 ${fill}% 0 0)`
   return (
     <div ref={ref} className="relative mt-2 overflow-visible">
-      {/* Leonardo Da Vinci Acoustic Blueprint Watermark with scroll-revealing acoustic arcs */}
-      <DaVinciNeverMissCallWatermark scrollProgress={scrollYProgress} />
       <div className="relative z-10">
         {['NEVER MISS', 'ANOTHER CALL.'].map((line) => (
           <div key={line} className="relative font-italiana leading-[0.98] text-[clamp(2.8rem,10vw,8rem)]">
@@ -973,7 +972,9 @@ function LogoZoomTransition({
               className="w-full h-full block object-cover object-[50%_35%]"
             />
             <div className="absolute inset-0 bg-[#F26522] mix-blend-multiply opacity-25 pointer-events-none" />
-            <TrackingSwarm imgRef={imgRef} boxes={BOXES} bias={[0.5, 0.35]} />
+            <div className="hidden md:block">
+              <TrackingSwarm imgRef={imgRef} boxes={BOXES} bias={[0.5, 0.35]} />
+            </div>
             {showVideo && (
               <video
                 ref={vidRef}
@@ -1061,6 +1062,7 @@ export default function App() {
 
   const [isLoading, setIsLoading] = useState(true)
   const [isHeroSettled, setIsHeroSettled] = useState(false)
+  const heroSettledRef = useRef(false)
   const lenisRef = useRef<Lenis | null>(null)
   const [showVideo, setShowVideo] = useState(true)
   const [toast, setToast] = useState('')
@@ -1069,7 +1071,12 @@ export default function App() {
   const heroImgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
-    const lenis = new Lenis({ duration: 1.15, smoothWheel: true, anchors: true })
+    const lenis = new Lenis({
+      duration: 1.15,
+      smoothWheel: true,
+      syncTouch: false,
+      anchors: true,
+    })
     lenisRef.current = lenis
     if (isLoading) {
       lenis.stop()
@@ -1253,10 +1260,16 @@ export default function App() {
       {isLoading && (
         <RenaissancePortalPreloader
           onBurnProgress={(p) => {
-            if (p > 0.3) setIsHeroSettled(true)
+            if (p > 0.3 && !heroSettledRef.current) {
+              heroSettledRef.current = true
+              setIsHeroSettled(true)
+            }
           }}
           onComplete={() => {
-            setIsHeroSettled(true)
+            if (!heroSettledRef.current) {
+              heroSettledRef.current = true
+              setIsHeroSettled(true)
+            }
             setIsLoading(false)
           }}
         />
@@ -1411,7 +1424,9 @@ export default function App() {
           />
         </motion.div>
         <div className="absolute inset-0 z-[1] bg-[#F26522] mix-blend-multiply opacity-20 pointer-events-none" />
-        <TrackingSwarm imgRef={heroImgRef} boxes={HERO_BOXES} bias={[0.5, 0.28]} pairs={[[0, 2], [1, 2], [3, 4]]} />
+        <div className="hidden md:block">
+          <TrackingSwarm imgRef={heroImgRef} boxes={HERO_BOXES} bias={[0.5, 0.28]} pairs={[[0, 2], [1, 2], [3, 4]]} />
+        </div>
         {/* readability scrims — keep tracking boxes behind text, darken bright clouds */}
         <div className="absolute inset-0 z-[5] bg-gradient-to-b from-black/40 via-transparent to-black/55 pointer-events-none" />
         <div className="absolute inset-x-0 bottom-0 h-[85%] z-[5] bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none" />
@@ -1702,55 +1717,65 @@ export default function App() {
         globalThemeBg={globalThemeBg}
       />
 
-      {/* ================= STACK / CAPABILITIES — dynamic dark theme ================= */}
+      {/* ================= DARK ZONE (CAPABILITIES + PROCESS) ================= */}
       <motion.section
         ref={stackRef}
-        id="capabilities"
         style={{ backgroundColor: globalThemeBg }}
-        className="relative w-full font-manrope"
+        className="relative w-full transition-colors duration-300 font-manrope"
       >
-          <span id="stack" className="sr-only" />
-          <DaVinciSectionWatermark variant="capabilities" />
+        {/* Soft editorial gradient blend from orange to black at the very top */}
+        <div className="absolute -top-24 inset-x-0 h-24 bg-gradient-to-b from-transparent to-[#0B0604] pointer-events-none z-10" />
 
-          {/* Soft editorial gradient blend from orange to black */}
-          <div className="absolute -top-24 inset-x-0 h-24 bg-gradient-to-b from-transparent to-[#0B0604] pointer-events-none z-10" />
-
-          {/* Classical Sculptural Battle Artwork — Left & Right Classical Soldiers Flanking the Section */}
-          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-            <div className="sticky top-0 h-[100dvh] md:h-screen w-full overflow-hidden flex items-center justify-between pointer-events-none will-change-transform">
-              {/* Left Marble Warrior — Slides in/out on Scroll with Floating Organic Breath (Desktop only) */}
-              <motion.div
-                aria-hidden
+        {/* Unified Sticky Container for Atmospheric Elements (Left Statue) */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <div className="sticky top-0 h-[100dvh] md:h-screen w-full overflow-hidden flex items-center justify-between pointer-events-none will-change-transform">
+            {/* Left Marble Warrior — Stays sticky across BOTH sections */}
+            <motion.div
+              aria-hidden
+              style={{
+                x: leftStatueX,
+                opacity: leftStatueOpacity,
+              }}
+              className="absolute left-0 top-0 bottom-0 pointer-events-none select-none will-change-transform z-0 h-full w-[45vw] max-w-[620px] hidden md:flex items-center"
+            >
+              <motion.img
+                src="/statue-left.webp"
+                alt=""
+                loading="eager"
+                decoding="async"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-full max-h-[94vh] object-contain object-left select-none filter brightness-[0.98] contrast-[1.03] drop-shadow-[0_24px_50px_rgba(0,0,0,0.85)]"
                 style={{
-                  x: leftStatueX,
-                  opacity: leftStatueOpacity,
+                  maskImage: 'linear-gradient(to bottom, black 80%, transparent 98%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 98%)',
                 }}
-                className="absolute left-0 top-0 bottom-0 pointer-events-none select-none will-change-transform z-0 h-full w-[45vw] max-w-[620px] hidden md:flex items-center"
-              >
-                <motion.img
-                  src="/statue-left.webp"
-                  alt=""
-                  loading="eager"
-                  decoding="async"
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-full max-h-[94vh] object-contain object-left select-none filter brightness-[0.98] contrast-[1.03] drop-shadow-[0_24px_50px_rgba(0,0,0,0.85)]"
-                  style={{
-                    maskImage: 'linear-gradient(to bottom, black 80%, transparent 98%)',
-                    WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 98%)',
-                  }}
-                />
-              </motion.div>
+              />
+            </motion.div>
 
-              {/* Left Marble Warrior only in sticky top container — Right statue moved to baseline touching marquee ticker */}
+            {/* Ambient gradients to softly transition top/bottom into adjacent sections */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0B0604] via-transparent to-[#0B0604] opacity-35 md:opacity-60 pointer-events-none" />
+            <div className="absolute inset-0 bg-[#0B0604]/20 pointer-events-none" />
+          </div>
+        </div>
 
-              {/* Ambient gradients to softly transition top/bottom into adjacent sections */}
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0B0604] via-transparent to-[#0B0604] opacity-35 md:opacity-60 pointer-events-none" />
-              <div className="absolute inset-0 bg-[#0B0604]/20 pointer-events-none" />
-            </div>
+        {/* --- CAPABILITIES SECTION --- */}
+        <div id="capabilities" className="relative w-full pt-20 sm:pt-28 pb-6 sm:pb-8">
+          <span id="stack" className="sr-only" />
+          
+          {/* Background Starry/Dust Effect */}
+          <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+            <div className="absolute top-[15%] left-[15%] w-[2px] h-[2px] bg-[#F26522] rounded-full shadow-[0_0_10px_2px_#F26522]" />
+            <div className="absolute top-[35%] right-[25%] w-[1.5px] h-[1.5px] bg-white rounded-full opacity-60" />
+            <div className="absolute top-[55%] left-[35%] w-[2px] h-[2px] bg-white rounded-full shadow-[0_0_5px_1px_white] opacity-30" />
+            <div className="absolute top-[85%] right-[10%] w-[3px] h-[3px] bg-[#F26522] rounded-full shadow-[0_0_12px_3px_#F26522] opacity-80" />
+            <div className="absolute top-[25%] right-[45%] w-[1px] h-[1px] bg-white rounded-full opacity-40" />
           </div>
 
-          <div className="relative z-10 max-w-[880px] lg:max-w-[920px] mx-auto px-6 md:px-12 pt-20 sm:pt-28 pb-6 sm:pb-8">
+          {/* Ambient Orange Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#F26522]/4 blur-[120px] rounded-full pointer-events-none z-0" />
+
+          <div className="relative z-10 max-w-[880px] lg:max-w-[920px] mx-auto px-6 md:px-12">
             <SectionLabel index="03">Capabilities</SectionLabel>
 
             <div className="mb-10 sm:mb-14">
@@ -1816,63 +1841,40 @@ export default function App() {
               ))}
             </div>
           </div>
+        </div>
 
-          {/* marquee band — exit transition trigger zone into Pricing */}
-          <div ref={exitTriggerRef} className="relative z-10 select-none pointer-events-none">
-            {/* Classical Sculptural Battle Artwork — Right Classical Heroes Flanking AI, Voice & Automation down until Marquee Ticker */}
-            <motion.div
-              aria-hidden
-              initial={{ opacity: 0, x: 48 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.1 }}
-              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute right-0 bottom-full z-0 pointer-events-none select-none will-change-transform w-[75vw] sm:w-[55vw] md:w-[48vw] lg:w-[42vw] max-w-[340px] sm:max-w-[480px] md:max-w-[620px] lg:max-w-[680px] flex items-end justify-end mb-[-1px]"
-            >
-              <motion.img
-                src="/statue-right.webp"
-                alt=""
-                loading="eager"
-                decoding="async"
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut' }}
-                className="w-full h-auto max-h-[580px] sm:max-h-[700px] md:max-h-[820px] lg:max-h-[900px] object-contain object-right-bottom select-none filter brightness-[0.98] contrast-[1.03] drop-shadow-[0_24px_50px_rgba(0,0,0,0.85)] opacity-65 sm:opacity-85 md:opacity-100"
-                style={{
-                  maskImage: 'linear-gradient(to left, black 75%, transparent 100%)',
-                  WebkitMaskImage: 'linear-gradient(to left, black 75%, transparent 100%)',
-                }}
-              />
-            </motion.div>
+        {/* --- PROCESS SECTION --- */}
+        <ProcessSection />
+        
+        {/* --- Right Statue restored to its original placement bridging the gap --- */}
+        <div className="relative z-10 select-none pointer-events-none">
+          <motion.div
+            aria-hidden
+            initial={{ opacity: 0, x: 48 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.1 }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute right-0 bottom-full z-0 pointer-events-none select-none will-change-transform w-[75vw] sm:w-[55vw] md:w-[48vw] lg:w-[42vw] max-w-[340px] sm:max-w-[480px] md:max-w-[620px] lg:max-w-[680px] flex items-end justify-end mb-[-1px]"
+          >
+            <motion.img
+              src="/statue-right.webp"
+              alt=""
+              loading="eager"
+              decoding="async"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-full h-auto max-h-[580px] sm:max-h-[700px] md:max-h-[820px] lg:max-h-[900px] object-contain object-right-bottom select-none filter brightness-[0.98] contrast-[1.03] drop-shadow-[0_24px_50px_rgba(0,0,0,0.85)] opacity-65 sm:opacity-85 md:opacity-100"
+              style={{
+                maskImage: 'linear-gradient(to left, black 75%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to left, black 75%, transparent 100%)',
+              }}
+            />
+          </motion.div>
+        </div>
 
-            <div className="border-y border-white/25 overflow-x-clip py-5 mb-4 select-none pointer-events-none">
-              <motion.div
-                animate={{ x: ['0%', '-50%'] }}
-                transition={{ duration: 32, repeat: Infinity, ease: 'linear' }}
-                className="flex w-max items-center gap-8 pr-8 will-change-transform select-none pointer-events-none"
-              >
-                {[...MARQUEE, ...MARQUEE].map((m, i) => (
-                  <span key={i} className="flex items-center gap-8 font-italiana text-white/90 text-[26px] whitespace-nowrap select-none pointer-events-none">
-                    {m} <span className="text-white/50 text-[16px]">✦</span>
-                  </span>
-                ))}
-              </motion.div>
-            </div>
-
-            {/* reverse outline marquee */}
-            <div className="border-b border-white/25 overflow-x-clip py-4 -rotate-1 pb-10 select-none pointer-events-none">
-              <motion.div
-                animate={{ x: ['-50%', '0%'] }}
-                transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-                className="flex w-max items-center gap-8 pr-8 will-change-transform select-none pointer-events-none"
-              >
-                {[...MARQUEE, ...MARQUEE].map((m, i) => (
-                  <span key={i} className="flex items-center gap-8 font-italiana text-transparent text-[22px] whitespace-nowrap select-none pointer-events-none" style={{ WebkitTextStroke: '1px rgba(255,246,233,0.55)' }}>
-                    {m} <span className="text-white/40 text-[14px]">✦</span>
-                  </span>
-                ))}
-              </motion.div>
-            </div>
-          </div>
-        </motion.section>
+        {/* exit transition trigger zone into Pricing */}
+        <div ref={exitTriggerRef} className="h-px w-full absolute bottom-40" />
+      </motion.section>
 
       {/* ================= PRICING ================= */}
       <motion.section
@@ -1880,7 +1882,6 @@ export default function App() {
         style={{ backgroundColor: globalThemeBg }}
         className="relative w-full font-manrope transition-colors duration-300"
       >
-        <DaVinciSectionWatermark variant="pricing" />
         <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-12 py-20">
           <SectionLabel index="04">Pricing</SectionLabel>
           <FillCta />
@@ -1894,7 +1895,7 @@ export default function App() {
         <motion.div
           aria-hidden
           style={{ x: thinkerX, opacity: thinkerOpacity, rotate: thinkerRotate }}
-          className="pointer-events-none absolute -left-4 bottom-0 z-[5] block h-[48%] w-[160px] sm:h-[65%] sm:w-[220px] md:h-[70%] md:w-[220px] lg:h-[85%] lg:w-[260px] xl:w-[400px] opacity-50 sm:opacity-85 md:opacity-95 will-change-transform"
+          className="pointer-events-none absolute -left-4 bottom-0 z-[5] block h-[65%] w-[220px] sm:h-[65%] sm:w-[220px] md:h-[70%] md:w-[220px] lg:h-[85%] lg:w-[260px] xl:w-[400px] opacity-70 sm:opacity-85 md:opacity-95 will-change-transform"
         >
           <motion.img
             src={`${FAQ_THINKER}?v=2`}
