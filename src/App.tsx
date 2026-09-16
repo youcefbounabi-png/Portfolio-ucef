@@ -7,7 +7,7 @@ import TrackingSwarm from './TrackingSwarm'
 import CloudTransition from './CloudTransition'
 import { FaqAccordion } from './components/ui/faq-accordion'
 import { RenaissancePortalPreloader } from './components/RenaissancePortalPreloader'
-import { DaVinciPortraitHalo, DaVinciSectionWatermark } from './components/DaVinciWatermarks'
+import { DaVinciPortraitHalo, DaVinciSectionWatermark, DaVinciNeverMissCallWatermark } from './components/DaVinciWatermarks'
 
 const LOGO_PATH =
   'M60 120C26.8629 120 0 93.1371 0 60V0C22.5654 0 42.2213 12.4569 52.4662 30.8691C38.4788 34.2089 28.0787 46.7902 28.0787 61.8006V63.1443C28.0787 79.9648 41.7146 93.6006 58.5353 93.6006H59.8789L59.8785 61.8006C59.8785 79.3633 74.1159 93.6006 91.6787 93.6006L91.6787 61.8006C91.6787 44.2783 77.5071 30.0661 60 30.0008L60 0H62.5352C94.2722 0 120 25.7279 120 57.4648V60C120 93.1371 93.1371 120 60 120Z'
@@ -560,13 +560,17 @@ function FillCta() {
   const fill = useTransform(scrollYProgress, [0.1, 0.9], [100, 0])
   const clip = useMotionTemplate`inset(0 ${fill}% 0 0)`
   return (
-    <div ref={ref} className="mt-2">
-      {['NEVER MISS', 'ANOTHER CALL.'].map((line) => (
-        <div key={line} className="relative font-italiana leading-[0.98] text-[clamp(2.8rem,10vw,8rem)]">
-          <div className="text-transparent" style={{ WebkitTextStroke: '1.5px rgba(255,246,233,0.6)' }}>{line}</div>
-          <motion.div aria-hidden className="absolute inset-0 text-[#FFF6E9]" style={{ clipPath: clip }}>{line}</motion.div>
-        </div>
-      ))}
+    <div ref={ref} className="relative mt-2 overflow-visible">
+      {/* Leonardo Da Vinci Acoustic Blueprint Watermark with scroll-revealing acoustic arcs */}
+      <DaVinciNeverMissCallWatermark scrollProgress={scrollYProgress} />
+      <div className="relative z-10">
+        {['NEVER MISS', 'ANOTHER CALL.'].map((line) => (
+          <div key={line} className="relative font-italiana leading-[0.98] text-[clamp(2.8rem,10vw,8rem)]">
+            <div className="text-transparent" style={{ WebkitTextStroke: '1.5px rgba(255,246,233,0.6)' }}>{line}</div>
+            <motion.div aria-hidden className="absolute inset-0 text-[#FFF6E9]" style={{ clipPath: clip }}>{line}</motion.div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -1717,14 +1721,14 @@ export default function App() {
           {/* Classical Sculptural Battle Artwork — Left & Right Classical Soldiers Flanking the Section */}
           <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
             <div className="sticky top-0 h-[100dvh] md:h-screen w-full overflow-hidden flex items-center justify-between pointer-events-none will-change-transform">
-              {/* Left Marble Warrior — Slides in/out on Scroll with Floating Organic Breath */}
+              {/* Left Marble Warrior — Slides in/out on Scroll with Floating Organic Breath (Desktop only) */}
               <motion.div
                 aria-hidden
                 style={{
                   x: leftStatueX,
                   opacity: leftStatueOpacity,
                 }}
-                className="absolute left-0 top-0 bottom-0 pointer-events-none select-none will-change-transform z-0 h-full w-[45vw] max-w-[620px] flex items-center"
+                className="absolute left-0 top-0 bottom-0 pointer-events-none select-none will-change-transform z-0 h-full w-[45vw] max-w-[620px] hidden md:flex items-center"
               >
                 <motion.img
                   src="/statue-left.webp"
@@ -1741,14 +1745,14 @@ export default function App() {
                 />
               </motion.div>
 
-              {/* Right Marble Heroes — Restored Flawless Neoclassical Sculpture */}
+              {/* Right Marble Heroes — Restored Flawless Neoclassical Sculpture Pushed Down to AI & Voice Automations level */}
               <motion.div
                 aria-hidden
                 style={{
                   x: rightStatueX,
                   opacity: rightStatueOpacity,
                 }}
-                className="absolute right-0 top-0 bottom-0 pointer-events-none select-none will-change-transform z-0 h-full w-[48vw] max-w-[660px] flex items-center justify-end"
+                className="absolute right-0 top-0 bottom-0 pointer-events-none select-none will-change-transform z-0 h-full w-[65vw] sm:w-[50vw] md:w-[48vw] max-w-[340px] sm:max-w-[480px] md:max-w-[660px] opacity-45 sm:opacity-85 md:opacity-100 flex items-end justify-end pb-6 sm:pb-10 md:pb-14"
               >
                 <motion.img
                   src="/statue-right.webp"
@@ -1757,7 +1761,7 @@ export default function App() {
                   decoding="async"
                   animate={{ y: [0, 8, 0] }}
                   transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-full max-h-[96vh] object-contain object-right select-none filter brightness-[0.98] contrast-[1.03] drop-shadow-[0_24px_50px_rgba(0,0,0,0.85)]"
+                  className="w-full max-h-[82vh] sm:max-h-[86vh] md:max-h-[90vh] object-contain object-right-bottom select-none filter brightness-[0.98] contrast-[1.03] drop-shadow-[0_24px_50px_rgba(0,0,0,0.85)]"
                   style={{
                     maskImage: 'linear-gradient(to bottom, black 84%, transparent 99%)',
                     WebkitMaskImage: 'linear-gradient(to bottom, black 84%, transparent 99%)',
@@ -1887,11 +1891,11 @@ export default function App() {
 
       {/* ================= FAQ / ASK A QUESTION ================= */}
       <section ref={faqRef} id="faq" className="relative w-full overflow-hidden bg-gradient-to-b from-[#F26522] via-[#B53E0B] to-[#F26522] font-manrope">
-        {/* side thinker — white marble statue, slides in from left on scroll */}
+        {/* side thinker — white marble statue, slides in from left on scroll (Visible on mobile & desktop) */}
         <motion.div
           aria-hidden
           style={{ x: thinkerX, opacity: thinkerOpacity, rotate: thinkerRotate }}
-          className="pointer-events-none absolute -left-4 bottom-0 z-[5] hidden md:block h-[70%] w-[220px] lg:h-[85%] lg:w-[260px] xl:w-[400px] will-change-transform"
+          className="pointer-events-none absolute -left-4 bottom-0 z-[5] block h-[48%] w-[160px] sm:h-[65%] sm:w-[220px] md:h-[70%] md:w-[220px] lg:h-[85%] lg:w-[260px] xl:w-[400px] opacity-50 sm:opacity-85 md:opacity-95 will-change-transform"
         >
           <motion.img
             src={`${FAQ_THINKER}?v=2`}

@@ -283,34 +283,102 @@ export function DaVinciSectionWatermark({
         className={`pointer-events-none absolute inset-0 select-none overflow-hidden ${className}`}
       >
         <svg
-          className="w-full h-full opacity-30"
+          className="w-full h-full opacity-60 md:opacity-80 transition-opacity duration-500"
           viewBox="0 0 1440 900"
           fill="none"
           preserveAspectRatio="xMidYMid slice"
         >
-          {/* Subtle architectural vertical gridlines aligned with standard 12-col margins */}
-          <line x1="120" y1="40" x2="120" y2="860" stroke="white" strokeWidth="0.7" strokeDasharray="3 7" opacity="0.4" />
-          <line x1="1320" y1="40" x2="1320" y2="860" stroke="white" strokeWidth="0.7" strokeDasharray="3 7" opacity="0.4" />
+          <defs>
+            <filter id="dvGlowWork" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
 
-          {/* Leonardo celestial compass quadrant in upper right */}
-          <g transform="translate(1180, 140)" opacity="0.5">
-            <path d="M 0 0 A 180 180 0 0 1 180 180" stroke="white" strokeWidth="1.2" fill="none" />
-            <path d="M 0 0 A 110 110 0 0 1 110 110" stroke="white" strokeWidth="0.8" strokeDasharray="4 6" fill="none" />
-            <line x1="0" y1="0" x2="180" y2="0" stroke="white" strokeWidth="0.8" />
-            <line x1="0" y1="0" x2="0" y2="180" stroke="white" strokeWidth="0.8" />
-            <circle cx="0" cy="0" r="3" fill="white" />
-            <text x="12" y="32" fill="white" opacity="0.7" fontSize="7.5" fontFamily="monospace" letterSpacing="0.16em">
-              FABRICA INTELLIGENTIAE
+          {/* Subtle architectural vertical gridlines aligned with standard 12-col margins */}
+          <line x1="120" y1="40" x2="120" y2="860" stroke="white" strokeWidth="0.9" strokeDasharray="4 8" opacity="0.6" />
+          <line x1="1320" y1="40" x2="1320" y2="860" stroke="white" strokeWidth="0.9" strokeDasharray="4 8" opacity="0.6" />
+
+          {/* Animated Leonardo celestial compass quadrant in upper right — rotating with degree ticks */}
+          <g transform="translate(1180, 160)" opacity="0.85">
+            <motion.g
+              animate={{ rotate: 360 }}
+              transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
+              style={{ transformOrigin: '0px 0px' }}
+            >
+              <circle cx="0" cy="0" r="180" stroke="white" strokeWidth="1.2" strokeDasharray="4 8" fill="none" opacity="0.7" />
+              <circle cx="0" cy="0" r="110" stroke="white" strokeWidth="1" fill="none" opacity="0.8" />
+              <circle cx="0" cy="0" r="68" stroke="white" strokeWidth="0.8" strokeDasharray="2 6" fill="none" opacity="0.6" />
+
+              {/* Quadrant tick marks */}
+              {[0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330].map((deg) => (
+                <line
+                  key={deg}
+                  x1="0"
+                  y1="-180"
+                  x2="0"
+                  y2={deg % 45 === 0 ? "-166" : "-172"}
+                  stroke="rgba(255, 255, 255, 0.7)"
+                  strokeWidth={deg % 45 === 0 ? "1.4" : "0.8"}
+                  transform={`rotate(${deg} 0 0)`}
+                />
+              ))}
+            </motion.g>
+
+            {/* Counter-rotating inscribed sacred geometry */}
+            <motion.g
+              animate={{ rotate: -360 }}
+              transition={{ duration: 160, repeat: Infinity, ease: 'linear' }}
+              style={{ transformOrigin: '0px 0px' }}
+              opacity="0.55"
+            >
+              <rect x="-78" y="-78" width="156" height="156" stroke="white" strokeWidth="0.9" fill="none" />
+              <rect x="-78" y="-78" width="156" height="156" stroke="white" strokeWidth="0.9" fill="none" transform="rotate(45 0 0)" />
+            </motion.g>
+
+            {/* Compass radial axes */}
+            <line x1="0" y1="0" x2="180" y2="0" stroke="white" strokeWidth="1" opacity="0.8" />
+            <line x1="0" y1="0" x2="0" y2="180" stroke="white" strokeWidth="1" opacity="0.8" />
+            <circle cx="0" cy="0" r="4" fill="white" filter="url(#dvGlowWork)" />
+            <text x="14" y="32" fill="white" opacity="0.9" fontSize="8" fontFamily="monospace" letterSpacing="0.2em">
+              FABRICA INTELLIGENTIAE · 1498
+            </text>
+            <text x="14" y="46" fill="white" opacity="0.6" fontSize="7" fontFamily="monospace" letterSpacing="0.14em">
+              DIVINA PROPORTIO
             </text>
           </g>
 
-          {/* Lower left Leonardo caliper & coordinate frame */}
-          <g transform="translate(90, 740)" opacity="0.4">
-            <line x1="0" y1="0" x2="280" y2="0" stroke="white" strokeWidth="0.8" />
-            <line x1="0" y1="-8" x2="0" y2="8" stroke="white" strokeWidth="1.2" />
-            <line x1="280" y1="-8" x2="280" y2="8" stroke="white" strokeWidth="1.2" />
-            <text x="140" y="-10" textAnchor="middle" fill="white" opacity="0.75" fontSize="7.5" fontFamily="monospace" letterSpacing="0.14em">
-              [WORKS // 01 — 07] · DIVINA PROPORTIO
+          {/* Lower left Leonardo caliper & coordinate frame with animated vernier slider */}
+          <g transform="translate(90, 740)" opacity="0.85">
+            <line x1="0" y1="0" x2="340" y2="0" stroke="white" strokeWidth="1.2" />
+            <line x1="0" y1="-12" x2="0" y2="12" stroke="white" strokeWidth="1.6" />
+            <line x1="340" y1="-12" x2="340" y2="12" stroke="white" strokeWidth="1.6" />
+
+            {/* Animated vernier indicator mark sliding back and forth */}
+            <motion.line
+              x1="60"
+              y1="-8"
+              x2="60"
+              y2="8"
+              stroke="#FFFFFF"
+              strokeWidth="2"
+              filter="url(#dvGlowWork)"
+              animate={{ x: [0, 220, 0] }}
+              transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+            />
+
+            {[0, 40, 80, 120, 160, 200, 240, 280, 320].map((x) => (
+              <line key={x} x1={x} y1="-5" x2={x} y2="5" stroke="rgba(255,255,255,0.7)" strokeWidth="0.9" />
+            ))}
+
+            <text x="170" y="-16" textAnchor="middle" fill="white" opacity="0.9" fontSize="8" fontFamily="monospace" letterSpacing="0.2em">
+              [WORKS // 01 — 07] · CANON ARCHITECTONICVS
+            </text>
+            <text x="170" y="24" textAnchor="middle" fill="white" opacity="0.6" fontSize="7" fontFamily="monospace" letterSpacing="0.16em">
+              SCALE RATIO 1:1.618 · SACRED GEOMETRY
             </text>
           </g>
         </svg>
@@ -325,45 +393,99 @@ export function DaVinciSectionWatermark({
         className={`pointer-events-none absolute inset-0 select-none overflow-hidden ${className}`}
       >
         <svg
-          className="w-full h-full opacity-25"
+          className="w-full h-full opacity-55 md:opacity-75 transition-opacity duration-500"
           viewBox="0 0 1440 1000"
           fill="none"
           preserveAspectRatio="xMidYMid slice"
         >
-          {/* Subtle Leonardo Wireframe Polyhedron Geometry in Upper Left */}
-          <g transform="translate(160, 180)" opacity="0.6">
-            <polygon
-              points="60,10 110,40 110,100 60,130 10,100 10,40"
+          <defs>
+            <filter id="dvGlowCap" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Animated Leonardo Wireframe Polyhedron Geometry in Upper Left (Pacioli 1498) */}
+          <g transform="translate(180, 180)" opacity="0.85">
+            <motion.g
+              animate={{ rotate: 360 }}
+              transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
+              style={{ transformOrigin: '60px 70px' }}
+            >
+              <polygon
+                points="60,10 110,40 110,100 60,130 10,100 10,40"
+                stroke="white"
+                strokeWidth="1.2"
+                fill="none"
+              />
+              <polygon
+                points="60,30 90,50 90,90 60,110 30,90 30,50"
+                stroke="white"
+                strokeWidth="0.8"
+                strokeDasharray="3 5"
+                fill="none"
+              />
+              <line x1="60" y1="10" x2="60" y2="30" stroke="white" strokeWidth="0.8" />
+              <line x1="110" y1="40" x2="90" y2="50" stroke="white" strokeWidth="0.8" />
+              <line x1="110" y1="100" x2="90" y2="90" stroke="white" strokeWidth="0.8" />
+              <line x1="60" y1="130" x2="60" y2="110" stroke="white" strokeWidth="0.8" />
+              <line x1="10" y1="100" x2="30" y2="90" stroke="white" strokeWidth="0.8" />
+              <line x1="10" y1="40" x2="30" y2="50" stroke="white" strokeWidth="0.8" />
+            </motion.g>
+
+            {/* Inner counter-rotating core */}
+            <motion.circle
+              cx="60"
+              cy="70"
+              r="24"
               stroke="white"
               strokeWidth="0.8"
+              strokeDasharray="2 4"
               fill="none"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+              style={{ transformOrigin: '60px 70px' }}
             />
-            <polygon
-              points="60,30 90,50 90,90 60,110 30,90 30,50"
-              stroke="white"
-              strokeWidth="0.6"
-              strokeDasharray="3 5"
-              fill="none"
-            />
-            <line x1="60" y1="10" x2="60" y2="30" stroke="white" strokeWidth="0.6" />
-            <line x1="110" y1="40" x2="90" y2="50" stroke="white" strokeWidth="0.6" />
-            <line x1="110" y1="100" x2="90" y2="90" stroke="white" strokeWidth="0.6" />
-            <line x1="60" y1="130" x2="60" y2="110" stroke="white" strokeWidth="0.6" />
-            <line x1="10" y1="100" x2="30" y2="90" stroke="white" strokeWidth="0.6" />
-            <line x1="10" y1="40" x2="30" y2="50" stroke="white" strokeWidth="0.6" />
-            <text x="60" y="152" textAnchor="middle" fill="white" opacity="0.8" fontSize="7" fontFamily="monospace" letterSpacing="0.15em">
+            <circle cx="60" cy="70" r="3" fill="white" filter="url(#dvGlowCap)" />
+
+            <text x="60" y="156" textAnchor="middle" fill="white" opacity="0.9" fontSize="7.5" fontFamily="monospace" letterSpacing="0.18em">
               POLYHEDRA · PACIOLI 1498
+            </text>
+            <text x="60" y="168" textAnchor="middle" fill="white" opacity="0.6" fontSize="6.5" fontFamily="monospace" letterSpacing="0.14em">
+              DE DIVINA PROPORTIONE
             </text>
           </g>
 
-          {/* Right margin technical radar coordinate */}
-          <g transform="translate(1260, 420)" opacity="0.5">
-            <circle cx="60" cy="60" r="60" stroke="white" strokeWidth="0.8" strokeDasharray="3 6" />
-            <circle cx="60" cy="60" r="38" stroke="white" strokeWidth="1" />
-            <line x1="60" y1="0" x2="60" y2="120" stroke="white" strokeWidth="0.7" />
-            <line x1="0" y1="60" x2="120" y2="60" stroke="white" strokeWidth="0.7" />
-            <text x="60" y="138" textAnchor="middle" fill="white" opacity="0.8" fontSize="7" fontFamily="monospace" letterSpacing="0.12em">
+          {/* Right margin technical radar coordinate with animated rotating sweep */}
+          <g transform="translate(1240, 420)" opacity="0.85">
+            <circle cx="70" cy="70" r="70" stroke="white" strokeWidth="1" strokeDasharray="4 8" />
+            <circle cx="70" cy="70" r="44" stroke="white" strokeWidth="1.2" />
+            <circle cx="70" cy="70" r="22" stroke="white" strokeWidth="0.8" strokeDasharray="2 4" />
+            <line x1="70" y1="0" x2="70" y2="140" stroke="white" strokeWidth="0.8" opacity="0.7" />
+            <line x1="0" y1="70" x2="140" y2="70" stroke="white" strokeWidth="0.8" opacity="0.7" />
+
+            {/* Rotating radar sweep ray */}
+            <motion.line
+              x1="70"
+              y1="70"
+              x2="140"
+              y2="70"
+              stroke="#FFFFFF"
+              strokeWidth="1.8"
+              filter="url(#dvGlowCap)"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+              style={{ transformOrigin: '70px 70px' }}
+            />
+
+            <text x="70" y="160" textAnchor="middle" fill="white" opacity="0.9" fontSize="7.5" fontFamily="monospace" letterSpacing="0.16em">
               AI TELEPHONY · &lt;600MS
+            </text>
+            <text x="70" y="172" textAnchor="middle" fill="white" opacity="0.6" fontSize="6.5" fontFamily="monospace" letterSpacing="0.12em">
+              HIGH-PRECISION LATENCY ORBIT
             </text>
           </g>
         </svg>
@@ -378,18 +500,18 @@ export function DaVinciSectionWatermark({
         className={`pointer-events-none absolute inset-0 select-none overflow-hidden ${className}`}
       >
         <svg
-          className="w-full h-full opacity-35"
+          className="w-full h-full opacity-45 md:opacity-65 transition-opacity duration-500"
           viewBox="0 0 1440 800"
           fill="none"
           preserveAspectRatio="xMidYMid slice"
         >
           {/* Top bracket framing */}
-          <g transform="translate(180, 60)" opacity="0.5">
-            <path d="M 0 20 L 0 0 L 20 0" stroke="white" strokeWidth="1.4" fill="none" />
-            <line x1="30" y1="0" x2="1050" y2="0" stroke="white" strokeWidth="0.8" strokeDasharray="4 8" />
-            <path d="M 1060 0 L 1080 0 L 1080 20" stroke="white" strokeWidth="1.4" fill="none" />
-            <text x="540" y="-8" textAnchor="middle" fill="white" opacity="0.8" fontSize="7.5" fontFamily="monospace" letterSpacing="0.2em">
-              TARIFARIVM · PROPORTIO MODERATA
+          <g transform="translate(180, 60)" opacity="0.8">
+            <path d="M 0 20 L 0 0 L 20 0" stroke="white" strokeWidth="1.5" fill="none" />
+            <line x1="30" y1="0" x2="1050" y2="0" stroke="white" strokeWidth="1" strokeDasharray="4 8" />
+            <path d="M 1060 0 L 1080 0 L 1080 20" stroke="white" strokeWidth="1.5" fill="none" />
+            <text x="540" y="-10" textAnchor="middle" fill="white" opacity="0.9" fontSize="8" fontFamily="monospace" letterSpacing="0.22em">
+              TARIFARIVM · PROPORTIO MODERATA · MMXXVI
             </text>
           </g>
         </svg>
@@ -398,4 +520,125 @@ export function DaVinciSectionWatermark({
   }
 
   return null
+}
+
+/**
+ * Da Vinci "Never Miss Another Call" Technical Blueprint Lines
+ * An authentic Leonardo da Vinci acoustic paraboloid and soundwave construction diagram
+ * featuring a scroll-driven reveal effect that draws into view as the user scrolls into the section!
+ */
+export function DaVinciNeverMissCallWatermark({
+  scrollProgress,
+  className = '',
+}: {
+  scrollProgress?: any
+  className?: string
+}) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-0 select-none overflow-hidden flex items-center justify-center ${className}`}
+    >
+      <svg
+        className="w-full max-w-[1200px] h-[520px] overflow-visible opacity-70 sm:opacity-90"
+        viewBox="0 0 1200 520"
+        fill="none"
+      >
+        <defs>
+          <filter id="dvCallGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* 1. Rotating Acoustic Geometry Ring centered on the text */}
+        <motion.g
+          animate={{ rotate: 360 }}
+          transition={{ duration: 180, repeat: Infinity, ease: 'linear' }}
+          style={{ transformOrigin: '600px 240px' }}
+        >
+          {/* Main outer proportion circle */}
+          <circle cx="600" cy="240" r="230" stroke="rgba(255, 255, 255, 0.35)" strokeWidth="1.2" strokeDasharray="6 10" />
+          <circle cx="600" cy="240" r="142" stroke="rgba(255, 255, 255, 0.45)" strokeWidth="1" />
+          <circle cx="600" cy="240" r="88" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="0.8" strokeDasharray="3 6" />
+
+          {/* Degree radial ticks */}
+          {[0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345].map((deg) => (
+            <line
+              key={deg}
+              x1="600"
+              y1="10"
+              x2="600"
+              y2={deg % 45 === 0 ? "24" : "18"}
+              stroke="rgba(255, 255, 255, 0.7)"
+              strokeWidth={deg % 45 === 0 ? "1.4" : "0.8"}
+              transform={`rotate(${deg} 600 240)`}
+            />
+          ))}
+
+          {/* Technical degree numbers */}
+          <text x="600" y="0" textAnchor="middle" fill="white" opacity="0.8" fontSize="8" fontFamily="monospace" letterSpacing="0.1em">000°</text>
+          <text x="844" y="243" textAnchor="start" fill="white" opacity="0.8" fontSize="8" fontFamily="monospace" letterSpacing="0.1em">090°</text>
+          <text x="600" y="484" textAnchor="middle" fill="white" opacity="0.8" fontSize="8" fontFamily="monospace" letterSpacing="0.1em">180°</text>
+          <text x="356" y="243" textAnchor="end" fill="white" opacity="0.8" fontSize="8" fontFamily="monospace" letterSpacing="0.1em">270°</text>
+        </motion.g>
+
+        {/* 2. Counter-rotating Inscribed Sacred Polygon */}
+        <motion.g
+          animate={{ rotate: -360 }}
+          transition={{ duration: 240, repeat: Infinity, ease: 'linear' }}
+          style={{ transformOrigin: '600px 240px' }}
+          opacity="0.4"
+        >
+          <polygon points="600,98 723,169 723,311 600,382 477,311 477,169" stroke="white" strokeWidth="1" fill="none" />
+          <polygon points="600,98 723,169 723,311 600,382 477,311 477,169" stroke="white" strokeWidth="0.8" strokeDasharray="4 6" fill="none" transform="rotate(30 600 240)" />
+        </motion.g>
+
+        {/* 3. Horizontal & Vertical Caliper Alignment Axes */}
+        <line x1="80" y1="240" x2="1120" y2="240" stroke="rgba(255, 255, 255, 0.4)" strokeWidth="1.2" strokeDasharray="8 8" />
+        <line x1="80" y1="225" x2="80" y2="255" stroke="rgba(255, 255, 255, 0.85)" strokeWidth="1.8" />
+        <line x1="1120" y1="225" x2="1120" y2="255" stroke="rgba(255, 255, 255, 0.85)" strokeWidth="1.8" />
+
+        {/* Center acoustic crosshair */}
+        <line x1="580" y1="240" x2="620" y2="240" stroke="#FFFFFF" strokeWidth="2" filter="url(#dvCallGlow)" />
+        <line x1="600" y1="220" x2="600" y2="260" stroke="#FFFFFF" strokeWidth="2" filter="url(#dvCallGlow)" />
+
+        {/* 4. Sweeping Leonardo Acoustic Paraboloids with Breathing Wave Motion */}
+        <motion.path
+          d="M 280 140 Q 600 80 920 140"
+          stroke="rgba(255, 255, 255, 0.6)"
+          strokeWidth="1.4"
+          fill="none"
+          animate={{ d: ['M 280 140 Q 600 80 920 140', 'M 280 150 Q 600 60 920 150', 'M 280 140 Q 600 80 920 140'] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.path
+          d="M 320 340 Q 600 400 880 340"
+          stroke="rgba(255, 255, 255, 0.6)"
+          strokeWidth="1.4"
+          fill="none"
+          animate={{ d: ['M 320 340 Q 600 400 880 340', 'M 320 330 Q 600 420 880 330', 'M 320 340 Q 600 400 880 340'] }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        />
+
+        {/* Technical drafting notations */}
+        <text x="100" y="228" fill="white" opacity="0.85" fontSize="8.5" fontFamily="monospace" letterSpacing="0.2em">
+          CANON VOCIS // ACOUSTICA AVTONOMA
+        </text>
+        <text x="100" y="260" fill="white" opacity="0.6" fontSize="7.5" fontFamily="monospace" letterSpacing="0.14em">
+          LATENCY &lt;600MS · DUPLEX TELEPHONY
+        </text>
+
+        <text x="1100" y="228" textAnchor="end" fill="white" opacity="0.85" fontSize="8.5" fontFamily="monospace" letterSpacing="0.2em">
+          SECTIO AUREA · φ = 1.61803
+        </text>
+        <text x="1100" y="260" textAnchor="end" fill="white" opacity="0.6" fontSize="7.5" fontFamily="monospace" letterSpacing="0.14em">
+          DA VINCI CODEX · FOLIO 84V
+        </text>
+      </svg>
+    </div>
+  )
 }
