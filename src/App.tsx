@@ -32,15 +32,14 @@ const ROMANS_IMG =
   'https://commons.wikimedia.org/wiki/Special:FilePath/Rembrandt%20-%20The%20Anatomy%20Lesson%20of%20Dr%20Nicolaes%20Tulp.jpg?width=1600'
 
 const BOXES = [
-  { x: 0.18, y: 0.34, w: 78, h: 98, word: 'face' },
-  { x: 0.3, y: 0.3, w: 80, h: 100, word: 'face' },
-  { x: 0.42, y: 0.32, w: 82, h: 102, word: 'face' },
-  { x: 0.55, y: 0.28, w: 78, h: 96, word: 'face' },
-  { x: 0.68, y: 0.3, w: 80, h: 100, word: 'face' },
-  { x: 0.78, y: 0.38, w: 76, h: 94, word: 'face' },
-  { x: 0.5, y: 0.72, w: 110, h: 76, word: 'subject' },
-  { x: 0.63, y: 0.58, w: 72, h: 88, word: 'ledger' },
-  { x: 0.7, y: 0.5, w: 64, h: 80, word: 'hands' },
+  { x: 0.63, y: 0.36, w: 90, h: 110, word: 'Dr. Nicolaes Tulp (Praelector)' },
+  { x: 0.52, y: 0.84, w: 130, h: 85, word: 'Forceps & Flexor Muscles' },
+  { x: 0.62, y: 0.65, w: 80, h: 80, word: 'Demonstrative Gesture' },
+  { x: 0.92, y: 0.90, w: 150, h: 110, word: 'Anatomical Textbook' },
+  { x: 0.30, y: 0.88, w: 110, h: 100, word: 'Aris Kindt (Cadaver)' },
+  { x: 0.43, y: 0.52, w: 80, h: 100, word: 'Observer (Fascination)' },
+  { x: 0.28, y: 0.10, w: 75, h: 95, word: 'Apex Observer' },
+  { x: 0.16, y: 0.55, w: 80, h: 110, word: 'Guild Member' },
 ]
 
 const HERO_IMG =
