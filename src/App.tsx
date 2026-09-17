@@ -9,6 +9,7 @@ import { FaqAccordion } from './components/ui/faq-accordion'
 import { RenaissancePortalPreloader } from './components/RenaissancePortalPreloader'
 import { DaVinciPortraitHalo, DaVinciSectionWatermark, DaVinciNeverMissCallWatermark } from './components/DaVinciWatermarks'
 import { ProcessSection } from './components/ProcessSection'
+import Logo3DScene from './components/Logo3DScene'
 
 const LOGO_PATH =
   'M60 120C26.8629 120 0 93.1371 0 60V0C22.5654 0 42.2213 12.4569 52.4662 30.8691C38.4788 34.2089 28.0787 46.7902 28.0787 61.8006V63.1443C28.0787 79.9648 41.7146 93.6006 58.5353 93.6006H59.8789L59.8785 61.8006C59.8785 79.3633 74.1159 93.6006 91.6787 93.6006L91.6787 61.8006C91.6787 44.2783 77.5071 30.0661 60 30.0008L60 0H62.5352C94.2722 0 120 25.7279 120 57.4648V60C120 93.1371 93.1371 120 60 120Z'
@@ -1250,17 +1251,65 @@ export default function App() {
   })
 
   const faqRef = useRef<HTMLElement>(null)
-  const { scrollYProgress: faqScrollProgress } = useScroll({
+  // --- ENTRANCE ANIMATION HOOKS (Triggered as section enters viewport) ---
+  const { scrollYProgress: faqEntranceProgress } = useScroll({
     target: faqRef,
-    offset: ['start end', 'end start'],
+    offset: ['start end', 'start start'],
   })
-  const thinkerX = useTransform(faqScrollProgress, [0.22, 0.52, 0.78, 0.98], ['-110%', '0%', '0%', '-110%'])
-  const thinkerOpacity = useTransform(faqScrollProgress, [0.22, 0.46, 0.82, 0.98], [0, 0.95, 0.95, 0])
-  const thinkerRotate = useTransform(faqScrollProgress, [0.22, 0.52, 0.78, 0.98], [-4, 0, 0, -4])
+  
+  // Statues slide in from the sides as you scroll into the FAQ
+  const thinkerX = useTransform(faqEntranceProgress, [0.3, 1], ['-110%', '0%'])
+  const thinkerRotate = useTransform(faqEntranceProgress, [0.3, 1], [-4, 0])
 
-  const templeX = useTransform(faqScrollProgress, [0.22, 0.52, 0.78, 0.98], ['110%', '0%', '0%', '110%'])
-  const templeOpacity = useTransform(faqScrollProgress, [0.22, 0.46, 0.82, 0.98], [0, 0.92, 0.92, 0])
-  const templeRotate = useTransform(faqScrollProgress, [0.22, 0.52, 0.78, 0.98], [4, 0, 0, 4])
+  const templeX = useTransform(faqEntranceProgress, [0.3, 1], ['110%', '0%'])
+  const templeRotate = useTransform(faqEntranceProgress, [0.3, 1], [4, 0])
+
+  // --- CINEMATIC CAMERA ZOOM (like a video editor zooming into the thinker) ---
+  // Tracks the entire section: FAQ content is ~first 40%, zoom happens in the last 60%.
+  const { scrollYProgress: faqTransitionProgress } = useScroll({
+    target: faqRef,
+    offset: ['start start', 'end end'],
+  })
+
+  // The "camera" scales from the bottom-left corner (0% 100%), which keeps the 
+  // thinker perfectly anchored while making him grow and pushing the temple off-screen.
+  // We extend the zoom to 0.9 so it's a slow, dramatic crawl over the huge scroll area.
+  const cameraScale = useTransform(faqTransitionProgress, [0.28, 0.9], [1, 1.8])
+  
+  // FAQ text stays visible much longer now. It only starts fading out at 0.3 
+  // (when you reach the very bottom of the FAQ / "Ask directly")
+  const faqContentOpacity = useTransform(faqTransitionProgress, [0.3, 0.42], [1, 0])
+
+  // CTA text cinematic entrance and exit
+  // Enters at 0.38-0.50. Stays solid. Fades out at 0.75-0.85 so it disappears BEFORE the 3D logo.
+  const faqCtaOpacity = useTransform(faqTransitionProgress, [0.38, 0.5, 0.75, 0.85], [0, 1, 1, 0])
+  const faqCtaY = useTransform(faqTransitionProgress, [0.38, 0.5], [40, 0])
+  const faqCtaScale = useTransform(faqTransitionProgress, [0.38, 0.5], [0.92, 1])
+  const faqCtaBlur = useTransform(faqTransitionProgress, [0.38, 0.5, 0.75, 0.85], ['blur(12px)', 'blur(0px)', 'blur(0px)', 'blur(12px)'])
+
+  // 3D Logo cinematic entrance AND exit
+  // It is the LAST element to fade out before the background goes.
+  const logo3DOpacity = useTransform(faqTransitionProgress, [0.4, 0.55, 0.85, 0.95], [0, 1, 1, 0])
+
+  // Combine entrance and fade-out mathematically to prevent CSS stacking bugs on the statues
+  const combinedThinkerOpacity = useTransform(
+    [faqEntranceProgress, faqTransitionProgress],
+    ([entrance, transition]) => {
+      const enterOp = entrance < 0.3 ? 0 : entrance > 0.9 ? 0.95 : 0.95 * ((entrance - 0.3) / 0.6)
+      const fadeOp = transition < 0.65 ? 1 : transition > 0.75 ? 0 : 1 - ((transition - 0.65) / 0.1)
+      return enterOp * fadeOp
+    }
+  )
+  const combinedTempleOpacity = useTransform(
+    faqTransitionProgress,
+    (transition) => {
+      return transition < 0.65 ? 0.92 : transition > 0.75 ? 0 : 0.92 * (1 - ((transition - 0.65) / 0.1))
+    }
+  )
+
+  // Fade out the entire sticky layer very slowly right at the END (Stage 3 of the outro)
+  // Now, the 3D logo will be the absolute last thing visible before the contact section
+  const stickyLayerOpacity = useTransform(faqTransitionProgress, [0.95, 1], [1, 0])
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -1971,85 +2020,146 @@ export default function App() {
       </motion.section>
 
       {/* ================= FAQ / ASK A QUESTION ================= */}
-      <section ref={faqRef} id="faq" className="relative w-full overflow-hidden bg-gradient-to-b from-[#F26522] via-[#B53E0B] to-[#F26522] font-manrope">
-        {/* side thinker — white marble statue, slides in from left on scroll (Visible on mobile & desktop) */}
-        <motion.div
-          aria-hidden
-          style={{ x: thinkerX, opacity: thinkerOpacity, rotate: thinkerRotate }}
-          className="pointer-events-none absolute -left-4 bottom-0 z-[5] block h-[65%] w-[220px] sm:h-[65%] sm:w-[220px] md:h-[70%] md:w-[220px] lg:h-[85%] lg:w-[260px] xl:w-[400px] opacity-70 sm:opacity-85 md:opacity-95 will-change-transform"
+      <section ref={faqRef} id="faq" className="relative w-full bg-gradient-to-b from-[#F26522] via-[#B53E0B] to-[#F26522] font-manrope">
+        
+        {/* LAYER 1: Sticky background — takes only 1px in document flow.
+            Visual size is full-screen via absolute child. It no longer fades out; 
+            it just naturally scrolls up with the document flow. */}
+        <motion.div className="sticky top-0 w-full h-px" style={{ opacity: stickyLayerOpacity, zIndex: 1 }}>
+          <div className="absolute top-0 left-0 w-full h-screen overflow-hidden pointer-events-none">
+
+            {/* 3D LOGO LAYER — sits behind the statues, fades in during the camera zoom */}
+            <motion.div 
+              style={{ opacity: logo3DOpacity }} 
+              className="absolute inset-0 w-full h-full z-0 pointer-events-none"
+            >
+              {!isLoading && <Logo3DScene progress={faqTransitionProgress} />}
+            </motion.div>
+
+            {/* CAMERA WRAPPER — zooms from the bottom-left corner, anchoring the thinker */}
+            <motion.div
+              style={{
+                scale: cameraScale,
+                transformOrigin: '0% 100%', // bottom-left corner exactly
+              }}
+              className="w-full h-full will-change-transform"
+            >
+              {/* Thinker statue — slides in, then gets "zoomed into" by the camera */}
+              <motion.div
+                aria-hidden
+                style={{ 
+                  x: thinkerX, 
+                  opacity: combinedThinkerOpacity, 
+                  rotate: thinkerRotate,
+                }}
+                className="pointer-events-none absolute -left-4 bottom-0 z-[5] block h-[65%] w-[220px] sm:h-[65%] sm:w-[220px] md:h-[70%] md:w-[220px] lg:h-[85%] lg:w-[260px] xl:w-[400px] will-change-transform"
+              >
+                <motion.img
+                  src={`${FAQ_THINKER}?v=2`}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+                  className="h-full w-full object-contain object-bottom mix-blend-multiply"
+                  style={{ maskImage: 'linear-gradient(to right, black 60%, transparent 97%)', WebkitMaskImage: 'linear-gradient(to right, black 60%, transparent 97%)', filter: 'sepia(0.18) saturate(1.1) brightness(0.97) contrast(1) drop-shadow(0 24px 40px rgba(0,0,0,0.35))' }}
+                />
+              </motion.div>
+
+              {/* Temple statue — slides in, then gets pushed off-screen by the camera zoom */}
+              <motion.div
+                aria-hidden
+                style={{ x: templeX, opacity: combinedTempleOpacity, rotate: templeRotate }}
+                className="pointer-events-none absolute -right-2 bottom-0 z-[5] hidden md:block h-[72%] w-[210px] lg:h-[80%] lg:w-[290px] xl:w-[360px] will-change-transform"
+              >
+                <motion.img
+                  src={FAQ_TEMPLE}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
+                  className="h-full w-full object-contain object-bottom mix-blend-multiply"
+                    style={{
+                      maskImage: 'linear-gradient(to left, black 55%, transparent 96%)',
+                      WebkitMaskImage: 'linear-gradient(to left, black 55%, transparent 96%)',
+                      filter: 'sepia(0.55) saturate(2.4) hue-rotate(-12deg) brightness(0.96) contrast(1.05) drop-shadow(0 20px 40px rgba(0,0,0,0.35))',
+                    }}
+                  />
+              </motion.div>
+            </motion.div> {/* end camera wrapper */}
+
+            {/* CTA Text — OUTSIDE the camera zoom, stays clean and stable */}
+            <motion.div 
+              style={{ 
+                opacity: faqCtaOpacity, 
+                y: faqCtaY,
+                scale: faqCtaScale,
+                filter: faqCtaBlur,
+              }}
+              className="absolute inset-0 z-20 w-full h-full flex flex-col md:flex-row items-center justify-start md:justify-end pointer-events-none px-6 md:px-12 xl:px-24 pt-[15vh] md:pt-0"
+            >
+              <div className="w-full md:w-auto max-w-[500px] text-center md:text-right">
+                <h2 className="font-italiana text-white leading-[1.05] text-[clamp(2.5rem,10vw,5.5rem)] drop-shadow-[0_4px_16px_rgba(242,101,34,0.6)]">
+                  Still thinking?<br/>
+                  <span className="text-[#2B0E02]">It's time to build.</span>
+                </h2>
+              </div>
+            </motion.div>
+
+          </div> {/* end absolute full-screen child */}
+        </motion.div> {/* End sticky background */}
+        
+        {/* LAYER 2: FAQ content — flows naturally with NO negative margin.
+            Gets full natural scroll height so spacer only starts after user reads everything. */}
+        <motion.div 
+          style={{ opacity: faqContentOpacity, position: 'relative' as const, zIndex: 10 }}
         >
-          <motion.img
-            src={`${FAQ_THINKER}?v=2`}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-            className="h-full w-full object-contain object-bottom opacity-95 mix-blend-multiply"
-            style={{ maskImage: 'linear-gradient(to right, black 60%, transparent 97%)', WebkitMaskImage: 'linear-gradient(to right, black 60%, transparent 97%)', filter: 'sepia(0.18) saturate(1.1) brightness(0.97) contrast(1) drop-shadow(0 24px 40px rgba(0,0,0,0.35))' }}
-          />
+          <div className="max-w-[1200px] mx-auto px-6 md:px-12 pt-[100px] pb-20">
+            <SectionLabel index="05">FAQ — Ask a question</SectionLabel>
+            <motion.h2
+              initial={{ opacity: 0, x: -48 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.5 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="font-italiana text-white leading-[1.05] text-[clamp(2rem,5vw,3.6rem)] max-w-[700px]"
+            >
+              Questions? Answered.
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, x: 48 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.5 }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="text-white/70 text-[15px] leading-[1.8] max-w-[560px] mt-4 font-light"
+            >
+              Delivery, pricing, ownership, and how the AI receptionist behaves — the short version.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, filter: 'blur(14px)', y: 20 }}
+              whileInView={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+              viewport={{ once: false, amount: 0.25 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="mt-10"
+            >
+              <FaqAccordion />
+            </motion.div>
+            <p className="text-center text-white/60 text-[14px] mt-8">
+              Still unsure?{' '}
+              <a href="#contact" className="text-white font-semibold underline underline-offset-4 hover:text-[#2B0E02] transition-colors">
+                Ask directly →
+              </a>
+            </p>
+          </div>
         </motion.div>
-        {/* side guardian — temple right; slides in from right on scroll */}
-        <motion.div
-          aria-hidden
-          style={{ x: templeX, opacity: templeOpacity, rotate: templeRotate }}
-          className="pointer-events-none absolute -right-2 bottom-0 z-[5] hidden md:block h-[72%] w-[210px] lg:h-[80%] lg:w-[290px] xl:w-[360px] will-change-transform"
-        >
-          <motion.img
-            src={FAQ_TEMPLE}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
-            className="h-full w-full object-contain object-bottom opacity-90 mix-blend-multiply"
-            style={{
-              maskImage: 'linear-gradient(to left, black 55%, transparent 96%)',
-              WebkitMaskImage: 'linear-gradient(to left, black 55%, transparent 96%)',
-              filter: 'sepia(0.55) saturate(2.4) hue-rotate(-12deg) brightness(0.96) contrast(1.05) drop-shadow(0 20px 40px rgba(0,0,0,0.35))',
-            }}
-          />
-        </motion.div>
-        <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-12 pb-20">
-          <SectionLabel index="05">FAQ — Ask a question</SectionLabel>
-          <motion.h2
-            initial={{ opacity: 0, x: -48 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.5 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="font-italiana text-white leading-[1.05] text-[clamp(2rem,5vw,3.6rem)] max-w-[700px]"
-          >
-            Questions? Answered.
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, x: 48 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.5 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-white/70 text-[15px] leading-[1.8] max-w-[560px] mt-4 font-light"
-          >
-            Delivery, pricing, ownership, and how the AI receptionist behaves — the short version.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, filter: 'blur(14px)', y: 20 }}
-            whileInView={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-            viewport={{ once: false, amount: 0.25 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="mt-10"
-          >
-            <FaqAccordion />
-          </motion.div>
-          <p className="text-center text-white/60 text-[14px] mt-8">
-            Still unsure?{' '}
-            <a href="#contact" className="text-white font-semibold underline underline-offset-4 hover:text-[#2B0E02] transition-colors">
-              Ask directly →
-            </a>
-          </p>
-        </div>
+        
+        {/* SPACER: Creates scroll distance for the cinematic crossfade after FAQ content ends */}
+        {/* Increased mobile to 300vh to give the user plenty of time to enjoy the cinematic text and 3D logo. */}
+        <div className="h-[300vh] md:h-[350vh] w-full" />
       </section>
 
       {/* ================= CONTACT / GET IN TOUCH ================= */}
-      <section id="contact" className="relative w-full bg-[#F26522] font-manrope">
+      <section id="contact" className="relative z-20 w-full bg-[#F26522] font-manrope">
         <div className="max-w-[1200px] mx-auto px-6 md:px-12 pb-20">
           <SectionLabel index="06">Contact — Get in touch</SectionLabel>
           <motion.h2
