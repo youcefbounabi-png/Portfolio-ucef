@@ -4,8 +4,10 @@ import { useGLTF, Center, Environment } from '@react-three/drei'
 import type { MotionValue } from 'motion/react'
 import * as THREE from 'three'
 
+import logoModelPath from '../assets/Meshy_AI_Monochrome_Orbit_0917171755_texture.glb?url'
+
 function LogoModel({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
-  const { scene } = useGLTF('/Meshy_AI_Monochrome_Orbit_0917171755_texture.glb')
+  const { scene } = useGLTF(logoModelPath)
   const modelRef = useRef<THREE.Group>(null)
 
   useFrame((state) => {
