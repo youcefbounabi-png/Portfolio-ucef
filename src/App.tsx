@@ -1294,7 +1294,7 @@ export default function App() {
   // Combine entrance and fade-out mathematically to prevent CSS stacking bugs on the statues
   const combinedThinkerOpacity = useTransform(
     [faqEntranceProgress, faqTransitionProgress],
-    ([entrance, transition]) => {
+    ([entrance, transition]: number[]) => {
       const enterOp = entrance < 0.3 ? 0 : entrance > 0.9 ? 0.95 : 0.95 * ((entrance - 0.3) / 0.6)
       const fadeOp = transition < 0.65 ? 1 : transition > 0.75 ? 0 : 1 - ((transition - 0.65) / 0.1)
       return enterOp * fadeOp
