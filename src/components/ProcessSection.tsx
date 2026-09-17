@@ -1,6 +1,49 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import { Sparkles } from 'lucide-react'
+
+const ProcessParticles = () => {
+  const [particles] = useState(() => 
+    [...Array(15)].map(() => ({
+      width: Math.random() * 4 + 2 + 'px',
+      height: Math.random() * 4 + 2 + 'px',
+      left: Math.random() * 100 + '%',
+      top: Math.random() * 100 + '%',
+      dur: Math.random() * 15 + 15,
+      del: Math.random() * 10,
+      x: Math.random() * 40 - 20,
+    }))
+  )
+
+  return (
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-80">
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-[#F26522]"
+          style={{
+            width: p.width,
+            height: p.height,
+            left: p.left,
+            top: p.top,
+            boxShadow: '0 0 10px 1px rgba(242,101,34,0.6)',
+          }}
+          animate={{
+            y: [0, -80, 0],
+            x: [0, p.x, 0],
+            opacity: [0, 0.8, 0],
+          }}
+          transition={{
+            duration: p.dur,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: p.del,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
 
 const PROCESS_STEPS = [
   {
@@ -42,14 +85,8 @@ export function ProcessSection() {
       id="process"
       className="relative w-full font-manrope pt-20 pb-40 overflow-hidden"
     >
-      {/* Background Starry/Dust Effect */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
-        <div className="absolute top-[20%] left-[10%] w-[2px] h-[2px] bg-[#F26522] rounded-full shadow-[0_0_10px_2px_#F26522]" />
-        <div className="absolute top-[40%] right-[20%] w-[1.5px] h-[1.5px] bg-white rounded-full opacity-60" />
-        <div className="absolute top-[60%] left-[30%] w-[2px] h-[2px] bg-white rounded-full shadow-[0_0_5px_1px_white] opacity-30" />
-        <div className="absolute top-[80%] right-[15%] w-[3px] h-[3px] bg-[#F26522] rounded-full shadow-[0_0_12px_3px_#F26522] opacity-80" />
-        <div className="absolute top-[10%] right-[40%] w-[1px] h-[1px] bg-white rounded-full opacity-40" />
-      </div>
+      {/* Animated Background Starry/Dust Effect */}
+      <ProcessParticles />
 
       {/* Ambient Orange Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#F26522]/5 blur-[120px] rounded-full pointer-events-none z-0" />

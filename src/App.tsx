@@ -632,7 +632,7 @@ function FooterWordmark() {
         <div className="grid gap-8 md:grid-cols-[1fr_1.2fr_1.2fr] md:gap-12">
           <div className="flex gap-4 text-[12px] leading-relaxed text-white/75">
             <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-white/80" />
-            <p>YOUCEF.DEV<br />WEB & AI STUDIO<br />LONDON · REMOTE</p>
+            <p>YOUCEF.DEV<br />WEB & AI STUDIO<br />ALGERIA · REMOTE</p>
           </div>
           <div className="border-b border-white/30">
             <SocialRow label="LinkedIn" href="https://www.linkedin.com/in/youcef-bounabi-723740218/" external />
@@ -1054,11 +1054,61 @@ function LogoZoomTransition({
   )
 }
 
+const FloatingOrangeDust = () => {
+  const [particles] = useState(() => 
+    [...Array(20)].map(() => ({
+      width: Math.random() * 5 + 2 + 'px',
+      height: Math.random() * 5 + 2 + 'px',
+      left: Math.random() * 100 + '%',
+      top: Math.random() * 100 + '%',
+      dur: Math.random() * 15 + 15,
+      del: Math.random() * 10,
+      x: Math.random() * 50 - 25,
+    }))
+  )
+
+  return (
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-[#F26522]/80"
+          style={{
+            width: p.width,
+            height: p.height,
+            left: p.left,
+            top: p.top,
+            boxShadow: '0 0 12px 1px rgba(242,101,34,0.6)',
+          }}
+          animate={{
+            y: [0, -120, 0],
+            x: [0, p.x, 0],
+            opacity: [0, 0.8, 0],
+          }}
+          transition={{
+            duration: p.dur,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: p.del,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 export default function App() {
   const heroRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const cloudY = useTransform(scrollYProgress, [0, 1], [0, -140])
   const bgY = useTransform(scrollYProgress, [0, 1], [0, -50])
+
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  const smoothMouseX = useSpring(mouseX, { stiffness: 25, damping: 30, mass: 1 })
+  const smoothMouseY = useSpring(mouseY, { stiffness: 25, damping: 30, mass: 1 })
+  const mouseMoveX = useTransform(smoothMouseX, [-0.5, 0.5], ['-1.5%', '1.5%'])
+  const mouseMoveY = useTransform(smoothMouseY, [-0.5, 0.5], ['-1.5%', '1.5%'])
 
   const [isLoading, setIsLoading] = useState(true)
   const [isHeroSettled, setIsHeroSettled] = useState(false)
@@ -1191,6 +1241,8 @@ export default function App() {
   })
   const leftStatueX = useTransform(stackScrollProgress, [0.10, 0.28, 0.88, 0.99], ['-70%', '0%', '0%', '-70%'])
   const leftStatueOpacity = useTransform(stackScrollProgress, [0.10, 0.24, 0.88, 0.99], [0, 1, 1, 0])
+  const rightStatueX = useTransform(stackScrollProgress, [0.10, 0.28, 0.88, 0.99], ['70%', '0%', '0%', '70%'])
+  const rightStatueOpacity = useTransform(stackScrollProgress, [0.10, 0.24, 0.88, 0.99], [0, 1, 1, 0])
 
   useMotionValueEvent(globalThemeBg, 'change', (latest) => {
     if (typeof document !== 'undefined') {
@@ -1260,7 +1312,7 @@ export default function App() {
       {isLoading && (
         <RenaissancePortalPreloader
           onBurnProgress={(p) => {
-            if (p > 0.3 && !heroSettledRef.current) {
+            if (p > 0.85 && !heroSettledRef.current) {
               heroSettledRef.current = true
               setIsHeroSettled(true)
             }
@@ -1335,9 +1387,10 @@ export default function App() {
                 { num: '01', title: 'Services', desc: 'Web, AI & Telephony', id: 'services' },
                 { num: '02', title: 'The Architect', desc: 'Engineering Practice', id: 'studio' },
                 { num: '03', title: 'Selected Work', desc: '7 Flagship Systems', id: 'work' },
-                { num: '04', title: 'Capabilities', desc: 'The Tools of the Trade', id: 'capabilities' },
-                { num: '05', title: 'Investment', desc: 'Pricing & Retainers', id: 'pricing' },
-                { num: '06', title: 'Inquiries & FAQ', desc: 'Questions Answered', id: 'faq' },
+                { num: '04', title: 'Capabilities', desc: 'The Tools of the Trade', id: 'stack' },
+                { num: '05', title: 'Process', desc: 'How We Work', id: 'process' },
+                { num: '06', title: 'Investment', desc: 'Pricing & Retainers', id: 'pricing' },
+                { num: '07', title: 'Inquiries & FAQ', desc: 'Questions Answered', id: 'faq' },
               ].map((item, idx) => (
                 <motion.button
                   key={item.id}
@@ -1346,7 +1399,10 @@ export default function App() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -14 }}
                   transition={{ duration: 0.32, delay: idx * 0.04, ease: [0.16, 1, 0.3, 1] }}
-                  onClick={() => scrollToSection(item.id)}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setTimeout(() => scrollToSection(item.id), 150);
+                  }}
                   className="group flex items-baseline justify-between text-left w-full py-2 border-b border-white/5 hover:border-white/20 transition-colors"
                 >
                   <div className="flex items-baseline gap-4">
@@ -1368,7 +1424,10 @@ export default function App() {
             <div className="relative z-10 pt-4 border-t border-white/10 space-y-3.5">
               <button
                 type="button"
-                onClick={() => scrollToSection('contact')}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setTimeout(() => scrollToSection('contact'), 150);
+                }}
                 className="w-full py-3.5 px-6 rounded-full bg-[#F26522] hover:bg-[#ff7537] text-white text-[12px] font-semibold tracking-[0.2em] uppercase transition-all shadow-[0_4px_24px_rgba(242,101,34,0.4)] active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 <span>Start A Project</span>
@@ -1407,26 +1466,50 @@ export default function App() {
 
       <motion.div style={{ backgroundColor: globalThemeBg }} className="relative w-full overflow-x-clip transition-colors duration-200">
       {/* ================= HERO — baroque sky, tracking, portfolio serif ================= */}
-      <section ref={heroRef} className="relative w-full min-h-[90vh] overflow-x-clip bg-[#F26522] font-manrope">
+      <section 
+        ref={heroRef} 
+        className="relative w-full min-h-[90vh] overflow-x-clip bg-[#F26522] font-manrope"
+        onMouseMove={(e) => {
+          const r = e.currentTarget.getBoundingClientRect()
+          const x = (e.clientX - r.left) / r.width - 0.5
+          const y = (e.clientY - r.top) / r.height - 0.5
+          mouseX.set(x)
+          mouseY.set(y)
+        }}
+        onMouseLeave={() => { mouseX.set(0); mouseY.set(0) }}
+      >
         <motion.div
-          animate={{ scale: [1.05, 1.12, 1.05] }}
-          transition={{ duration: 36, repeat: Infinity, ease: 'easeInOut' }}
+          initial={{ scale: 1.4 }}
+          animate={{ scale: isHeroSettled ? 1 : 1.4 }}
+          transition={{ duration: 2.8, ease: [0.16, 1, 0.3, 1] }}
           className="absolute inset-0 z-0"
           style={{ transformOrigin: '50% 30%', y: bgY, willChange: 'transform' }}
         >
-          <img
-            ref={heroImgRef}
-            src={HERO_IMG}
-            alt="Baroque celestial fresco studied by machine vision"
-            fetchPriority="high"
-            decoding="async"
-            className="w-full h-full block object-cover object-[50%_28%]"
-          />
+          <motion.div
+            animate={{ scale: [1.05, 1.12, 1.05] }}
+            transition={{ duration: 36, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-full h-full"
+          >
+            <motion.img
+              ref={heroImgRef}
+              src={HERO_IMG}
+              alt="Baroque celestial fresco studied by machine vision"
+              fetchPriority="high"
+              decoding="async"
+              style={{ x: mouseMoveX, y: mouseMoveY, willChange: 'transform' }}
+              className="w-full h-full block object-cover object-[50%_28%] scale-105"
+            />
+          </motion.div>
         </motion.div>
         <div className="absolute inset-0 z-[1] bg-[#F26522] mix-blend-multiply opacity-20 pointer-events-none" />
-        <div className="hidden md:block">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHeroSettled ? 1 : 0 }}
+          transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+          className="hidden md:block"
+        >
           <TrackingSwarm imgRef={heroImgRef} boxes={HERO_BOXES} bias={[0.5, 0.28]} pairs={[[0, 2], [1, 2], [3, 4]]} />
-        </div>
+        </motion.div>
         {/* readability scrims — keep tracking boxes behind text, darken bright clouds */}
         <div className="absolute inset-0 z-[5] bg-gradient-to-b from-black/40 via-transparent to-black/55 pointer-events-none" />
         <div className="absolute inset-x-0 bottom-0 h-[85%] z-[5] bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none" />
@@ -1443,17 +1526,18 @@ export default function App() {
               <p className="text-white text-[13px] leading-[1.5]">
                 Youcef.dev
                 <br />
-                Web & AI Studio. London · Remote.
+                Web & AI Studio. Algeria · Remote.
                 <br />
                 Taking projects now.
               </p>
             </div>
-            <nav className="hidden md:flex items-center gap-7 text-white/85 text-[12px] tracking-[0.2em]">
-              <a href="#services" className="hover:text-white transition-colors">SERVICES</a>
-              <a href="#work" className="hover:text-white transition-colors">WORK</a>
-              <a href="#stack" className="hover:text-white transition-colors">STACK</a>
-              <a href="#pricing" className="hover:text-white transition-colors">PRICING</a>
-              <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
+            <nav className="hidden md:flex items-center gap-7 text-white text-[12px] tracking-[0.2em] [text-shadow:0_2px_12px_rgba(0,0,0,0.9)]">
+              <a href="#services" className="hover:text-[#F26522] hover:-translate-y-0.5 transition-all inline-block">SERVICES</a>
+              <a href="#work" className="hover:text-[#F26522] hover:-translate-y-0.5 transition-all inline-block">WORK</a>
+              <a href="#stack" className="hover:text-[#F26522] hover:-translate-y-0.5 transition-all inline-block">STACK</a>
+              <a href="#process" className="hover:text-[#F26522] hover:-translate-y-0.5 transition-all inline-block">PROCESS</a>
+              <a href="#pricing" className="hover:text-[#F26522] hover:-translate-y-0.5 transition-all inline-block">PRICING</a>
+              <a href="#faq" className="hover:text-[#F26522] hover:-translate-y-0.5 transition-all inline-block">FAQ</a>
             </nav>
             <div className="hidden sm:block">
               <Magnetic>
@@ -1688,11 +1772,11 @@ export default function App() {
                   </span>
                   <span className="font-italiana text-[22px] text-[#331507]/40">{s.no}</span>
                 </div>
-                <h3 className="mt-5 font-italiana text-[30px] leading-none">{s.title}</h3>
-                <p className="mt-2 text-[14px] text-[#331507]/70 leading-relaxed">{s.desc}</p>
+                <h3 className="mt-5 font-italiana text-[32px] md:text-[34px] leading-none">{s.title}</h3>
+                <p className="mt-2 text-[15px] md:text-[16px] text-[#331507]/75 leading-relaxed">{s.desc}</p>
                 <ul className="mt-5 space-y-2.5">
                   {s.points.map((p) => (
-                    <li key={p} className="flex items-start gap-2.5 text-[13px] text-[#331507]/85">
+                    <li key={p} className="flex items-start gap-2.5 text-[14px] md:text-[15px] text-[#331507]/85">
                       <span className="mt-0.5 w-[18px] h-[18px] rounded-full bg-[#F26522]/10 text-[#F26522] grid place-items-center shrink-0">
                         <Check size={11} strokeWidth={3} />
                       </span>
@@ -1729,6 +1813,7 @@ export default function App() {
         {/* Unified Sticky Container for Atmospheric Elements (Left Statue) */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <div className="sticky top-0 h-[100dvh] md:h-screen w-full overflow-hidden flex items-center justify-between pointer-events-none will-change-transform">
+            <FloatingOrangeDust />
             {/* Left Marble Warrior — Stays sticky across BOTH sections */}
             <motion.div
               aria-hidden
@@ -1850,11 +1935,8 @@ export default function App() {
         <div className="relative z-10 select-none pointer-events-none">
           <motion.div
             aria-hidden
-            initial={{ opacity: 0, x: 48 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.1 }}
-            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute right-0 bottom-full z-0 pointer-events-none select-none will-change-transform w-[75vw] sm:w-[55vw] md:w-[48vw] lg:w-[42vw] max-w-[340px] sm:max-w-[480px] md:max-w-[620px] lg:max-w-[680px] flex items-end justify-end mb-[-1px]"
+            style={{ x: rightStatueX, opacity: rightStatueOpacity, willChange: 'transform, opacity' }}
+            className="absolute right-0 bottom-full z-0 pointer-events-none select-none w-[75vw] sm:w-[55vw] md:w-[48vw] lg:w-[42vw] max-w-[340px] sm:max-w-[480px] md:max-w-[620px] lg:max-w-[680px] flex items-end justify-end mb-[-1px]"
           >
             <motion.img
               src="/statue-right.webp"
@@ -1912,7 +1994,7 @@ export default function App() {
         <motion.div
           aria-hidden
           style={{ x: templeX, opacity: templeOpacity, rotate: templeRotate }}
-          className="pointer-events-none absolute -right-2 bottom-0 z-[5] hidden md:block h-[68%] w-[190px] lg:w-[260px] xl:w-[320px] will-change-transform"
+          className="pointer-events-none absolute -right-2 bottom-0 z-[5] hidden md:block h-[72%] w-[210px] lg:h-[80%] lg:w-[290px] xl:w-[360px] will-change-transform"
         >
           <motion.img
             src={FAQ_TEMPLE}
