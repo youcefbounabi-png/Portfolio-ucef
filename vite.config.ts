@@ -59,13 +59,15 @@ export default defineConfig({
     port: 5176,
     host: true,
   },
+  assetsInclude: ['**/*.glb'],
   build: {
     cssCodeSplit: true,
     minify: 'esbuild',
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
+          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
           'vendor-motion': ['motion'],
           'vendor-icons': ['lucide-react'],
           'vendor-utils': ['@number-flow/react', 'lenis'],

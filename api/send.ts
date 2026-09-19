@@ -9,6 +9,8 @@ export default async function handler(req: any, res: any) {
       return res.status(500).json({ error: 'Missing RESEND_API_KEY environment variable' })
     }
 
+    const data = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {})
+
     const resendRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
