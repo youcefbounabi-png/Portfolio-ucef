@@ -7,7 +7,7 @@ export default async function handler(req: any, res: any) {
   const origin = req.headers.origin || req.headers.referer || ''
   const isAllowedOrigin =
     !origin ||
-    origin.includes('youcef-dev.vercel.app') ||
+    origin.includes('youcefdev.com') || origin.includes('youcef-dev.vercel.app') ||
     origin.includes('localhost') ||
     origin.includes('127.0.0.1') ||
     origin.includes('vercel.app')
