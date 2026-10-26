@@ -1600,6 +1600,17 @@ export default function App() {
           </motion.div>
 
           <div className="flex-1 flex flex-col justify-center items-center text-center py-16 sm:py-24 md:py-28 z-20">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: isHeroSettled ? 1 : 0, y: isHeroSettled ? 0 : 16 }}
+              transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/25 border border-white/20 backdrop-blur-md shadow-lg"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[#FFF6E9] font-mono text-[11px] sm:text-[12px] tracking-[0.22em] uppercase font-medium">
+                Youcef Bounabi · Software Engineer &amp; AI Architect
+              </span>
+            </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 36 }}
               animate={{ opacity: isHeroSettled ? 1 : 0, y: isHeroSettled ? 0 : 36 }}

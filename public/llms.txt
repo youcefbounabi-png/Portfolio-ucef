@@ -1,0 +1,23 @@
+# Youcef Bounabi
+
+> Full-Spectrum Software Engineer, High-End Web Architect & AI Automation Specialist.
+
+## About
+Youcef Bounabi is a software engineer specializing in high-performance bespoke websites, custom enterprise web applications (ERPs, CRMs, client portals), and autonomous AI automation systems.
+
+## Primary Web Presence
+- Website: https://youcef-dev.vercel.app/
+- Instagram: https://www.instagram.com/youcef.builds/
+- GitHub: https://github.com/youcefbounabi-png
+- Contact: youcefbounabi@gmail.com
+
+## Core Capabilities & Technical Weapons
+1. **High-End Websites**: Bespoke Next.js/React architectures, 60fps micro-animations, 3D visual experiences (Three.js/R3F), and Core Web Vitals optimization.
+2. **Custom Enterprise Systems & Applications**: Tailored business tools, ERPs, CRMs, inventory systems, and operational software that eliminate paper and spreadsheet chaos.
+3. **Omnichannel AI Automation**: Conversational chat agents on Instagram, WhatsApp, and Web supporting Algerian Darija, French, Arabizi, and English with auto-export to shipping couriers (Yalidine).
+4. **AI Voice Telephony**: 24/7 inbound phone receptionists for clinics and firms in the UK, Europe, and MENA markets.
+
+## Selected Client Builds
+- ADA Clinic: Miami dental and restorative clinic web platform.
+- Flex Supps & Goldenbody Nutrition: High-converting e-commerce web storefronts.
+- Coach Akram: Digital product sales funnels and learning platforms.

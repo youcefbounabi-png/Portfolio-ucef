@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://youcef-dev.vercel.app/sitemap.xml
